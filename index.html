@@ -1,0 +1,1441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EMITLab</title>
+  <style>
+    :root {
+      /* ASU core colors (maroon & gold) */
+      --asu-maroon: #8C1D40;
+      --asu-gold: #FFC627;
+      --asu-black: #000000;
+      --asu-white: #FFFFFF;
+      --asu-gray: #747474;
+
+      /* UI palette derived from ASU colors */
+      --bg: #FDFBF8;
+      --bg-alt: #FFFFFF;
+      --bg-soft: #F4F4F5;
+      --card: #FFFFFF;
+      --card-alt: #FAFAFA;
+      --accent: var(--asu-maroon);
+      --accent-gold: var(--asu-gold);
+      --accent-soft: rgba(140, 29, 64, 0.06);
+      --text: #1F2933;
+      --text-muted: #4B5563;
+      --border-subtle: rgba(140, 29, 64, 0.15);
+      --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.08);
+      --radius-lg: 16px;
+      --radius-pill: 999px;
+      --max-width: 1120px;
+      --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: var(--font-sans);
+      background: linear-gradient(180deg, #fffdf7 0%, #f8f4ec 40%, #f3f2f0 100%);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+    }
+
+    .page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* NAVBAR */
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: linear-gradient(
+        90deg,
+        var(--asu-maroon) 0%,
+        #6a1531 50%,
+        #3c0c1b 100%
+      );
+      color: var(--asu-white);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+    }
+
+    .nav-inner {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0.5rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+      min-width: 0;
+    }
+
+    .nav-logo-img {
+      height: 52px;
+      width: auto;
+      display: block;
+      border-radius: 4px;
+      object-fit: cover;
+    }
+
+    .nav-title {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+      min-width: 0;
+    }
+
+    .nav-title-main {
+      font-size: 1.02rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .nav-title-sub {
+      font-size: 0.78rem;
+      opacity: 0.9;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.1rem;
+      font-size: 0.86rem;
+      opacity: 0.95;
+    }
+
+    .nav-links a {
+      position: relative;
+      padding-bottom: 2px;
+      text-decoration: none;
+    }
+
+    .nav-links a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 0;
+      height: 2px;
+      background: var(--asu-gold);
+      border-radius: 999px;
+      transition: width 0.18s ease-out;
+    }
+
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+
+    .nav-chip {
+      padding: 0.25rem 0.9rem;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(255, 198, 39, 0.9);
+      background: rgba(255, 255, 255, 0.06);
+      font-size: 0.73rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #fff7d0;
+      white-space: nowrap;
+    }
+
+    .nav-chip span {
+      font-weight: 600;
+      color: var(--asu-gold);
+    }
+
+    main {
+      flex: 1;
+    }
+
+    .section {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 2.5rem 1.25rem;
+    }
+
+    /* HERO */
+
+    .hero {
+      padding-top: 2.75rem;
+      padding-bottom: 2.25rem;
+      display: grid;
+      grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+      gap: 2.75rem;
+      align-items: center;
+    }
+
+    @media (max-width: 880px) {
+      .hero {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .hero-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.3rem 0.9rem;
+      border-radius: var(--radius-pill);
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(140, 29, 64, 0.35);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: 1.1rem;
+      color: var(--accent);
+    }
+
+    .hero-label-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--asu-gold);
+      box-shadow: 0 0 10px rgba(255, 198, 39, 0.8);
+    }
+
+    .hero-title {
+      font-size: clamp(2.1rem, 3.7vw, 2.7rem);
+      line-height: 1.1;
+      margin-bottom: 0.9rem;
+      color: var(--accent);
+    }
+
+    .hero-title span {
+      color: var(--asu-black);
+    }
+
+    .hero-blurb {
+      font-size: 0.99rem;
+      color: var(--text-muted);
+      max-width: 38rem;
+      line-height: 1.6;
+      margin-bottom: 1.4rem;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.9rem;
+    }
+
+    .hero-meta-pill {
+      padding: 0.4rem 0.9rem;
+      border-radius: var(--radius-pill);
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--asu-maroon);
+      font-size: 0.78rem;
+      border: 1px solid rgba(140, 29, 64, 0.18);
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.9rem;
+      align-items: center;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      padding: 0.75rem 1.5rem;
+      border-radius: var(--radius-pill);
+      border: 0;
+      background: linear-gradient(135deg, var(--asu-gold), #ffdd73);
+      color: var(--asu-black);
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      box-shadow: 0 12px 24px rgba(140, 29, 64, 0.2);
+      text-decoration: none;
+    }
+
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      padding: 0.7rem 1.4rem;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(140, 29, 64, 0.45);
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--accent);
+      font-size: 0.86rem;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    /* Hero “orbit” summary */
+
+    .hero-orbit {
+      position: relative;
+      min-height: 260px;
+    }
+
+    .hero-orbit-main {
+      position: absolute;
+      inset: 50%;
+      transform: translate(-50%, -50%);
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle at top, #fff7d0 0%, #ffe293 40%, #ffc627 100%);
+      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 1.3rem;
+    }
+
+    .hero-orbit-main h2 {
+      font-size: 0.93rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: #5b1e2d;
+      margin: 0 0 0.3rem;
+    }
+
+    .hero-orbit-main p {
+      margin: 0;
+      font-size: 0.78rem;
+      color: #3b121d;
+      opacity: 0.9;
+    }
+
+    .hero-orbit-ring {
+      position: absolute;
+      inset: 50%;
+      transform: translate(-50%, -50%);
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      border: 1px dashed rgba(140, 29, 64, 0.35);
+      opacity: 0.9;
+    }
+
+    .hero-orbit-chip {
+      position: absolute;
+      padding: 0.45rem 0.85rem;
+      font-size: 0.65rem;
+      background: rgba(255, 255, 255, 0.96);
+      border-radius: 999px;
+      border: 1px solid rgba(140, 29, 64, 0.35);
+      color: var(--text-muted);
+      backdrop-filter: blur(8px);
+      max-width: 170px;
+        top: 30%;
+  left: 30%;
+       transform-origin: center center;
+      
+    }
+
+    .hero-orbit-chip strong {
+      color: var(--accent);
+    }
+
+
+    .hero-orbit-chip:nth-of-type(1) {
+  transform: rotate(20deg) translate(150px) rotate(-20deg);
+}
+
+.hero-orbit-chip:nth-of-type(2) {
+  transform: rotate(20deg) translate(150px) rotate(-20deg);
+}
+
+.hero-orbit-chip:nth-of-type(3) {
+  transform: rotate(60deg) translate(150px) rotate(-60deg);
+}
+
+.hero-orbit-chip:nth-of-type(4) {
+  transform: rotate(200deg) translate(150px) rotate(-200deg);
+}
+
+.hero-orbit-chip:nth-of-type(5) {
+  transform: rotate(-40deg) translate(150px) rotate(40deg);
+}
+
+    @media (max-width: 880px) {
+      .hero-orbit-main {
+        width: 190px;
+        height: 190px;
+      }
+      .hero-orbit-ring {
+        width: 260px;
+        height: 260px;
+      }
+      .hero-orbit-chip {
+        font-size: 0.7rem;
+      }
+    }
+
+    /* SECTION HEADERS */
+
+    .section-header {
+      margin-bottom: 1.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .section-title {
+      font-size: 1.4rem;
+      margin: 0 0 0.35rem;
+      color: var(--accent);
+    }
+
+    .section-kicker {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+      color: var(--accent);
+      margin-bottom: 0.25rem;
+    }
+
+    .section-subtitle {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      max-width: 32rem;
+    }
+
+    /* GRANTS GRID */
+
+    .grants-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .grant-card {
+      background:
+        linear-gradient(135deg, var(--accent-soft), transparent),
+        var(--card);
+      border-radius: var(--radius-lg);
+      padding: 1.15rem 1.2rem;
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-soft);
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .grant-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.18rem 0.65rem;
+      font-size: 0.7rem;
+      border-radius: var(--radius-pill);
+      background: rgba(140, 29, 64, 0.05);
+      border: 1px solid rgba(140, 29, 64, 0.25);
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: var(--accent);
+    }
+
+    .grant-tag-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--asu-gold);
+    }
+
+    .grant-title {
+      margin: 0;
+      font-size: 1rem;
+      color: var(--accent);
+    }
+
+    .grant-sub {
+      margin: 0;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .grant-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.55rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .pill {
+      font-size: 0.7rem;
+      padding: 0.15rem 0.55rem;
+      border-radius: var(--radius-pill);
+      background: #fffaf0;
+      border: 1px solid rgba(140, 29, 64, 0.25);
+      color: var(--text-muted);
+      text-decoration: none;
+    }
+
+    .pill a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .grant-body {
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .grant-footer {
+      margin-top: 0.6rem;
+      font-size: 0.75rem;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      opacity: 0.95;
+    }
+
+    .grant-highlight {
+      position: absolute;
+      inset: auto -40px -60px auto;
+      width: 90px;
+      height: 90px;
+      background: radial-gradient(circle, rgba(255, 198, 39, 0.45), transparent 70%);
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    /* MISSION / VISION */
+
+    .two-col {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+      gap: 1.75rem;
+    }
+
+    @media (max-width: 880px) {
+      .two-col {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .box {
+      background: var(--bg-alt);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-subtle);
+      padding: 1.45rem 1.5rem;
+      box-shadow: var(--shadow-soft);
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    .box h3 {
+      margin-top: 0;
+      margin-bottom: 0.6rem;
+      font-size: 1rem;
+      color: var(--accent);
+    }
+
+    .list {
+      margin: 0.5rem 0 0;
+      padding-left: 1.1rem;
+      font-size: 0.86rem;
+    }
+
+    .list li {
+      margin: 0.2rem 0;
+    }
+
+    /* FOOTER */
+
+    .footer {
+      border-top: 1px solid rgba(140, 29, 64, 0.3);
+      padding: 1.6rem 1.25rem 2.2rem;
+      font-size: 0.8rem;
+      color: var(--asu-white);
+      background: linear-gradient(
+        180deg,
+        #4c0f22 0%,
+        #3a0b19 50%,
+        #21040d 100%
+      );
+    }
+
+    .footer-inner {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.9rem;
+    }
+
+    .footer-links a {
+      opacity: 0.85;
+      color: #ffebc0;
+      text-decoration: none;
+    }
+
+    .footer-links a:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="nav">
+      <div class="nav-inner">
+        <div class="nav-left">
+          <!-- EMITLab logo image -->
+			<a href="#top"><img src="emitlab2.jpg" alt="EMITLab logo" class="nav-logo-img" /></a>
+          <div class="nav-title">
+			  <span class="nav-title-main"><a href="#top">EMITLab</a></span>
+            <span class="nav-title-sub">
+				<a href="https://scai.asu.edu">SCAI</a> · <a href="https://asu.edu">Arizona State University</a>
+            </span>
+          </div>
+        </div>
+        <div class="nav-right">
+          <nav class="nav-links">
+            <a href="#research">Research</a>
+			<a href="#about">Mission</a>  
+            <a href="#grants">Grants &amp; Themes</a>
+	    <a href="#people">People</a>
+          </nav>
+          <!-- CASCADE reference + link -->
+          <a
+            href="https://cascade.asu.edu/"
+            class="nav-chip"
+            target="_blank"
+            rel="noopener"
+          >
+            An   <span>ASU CASCADE</span> LAB
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <!-- HERO / HOMEPAGE BLURB -->
+      <section class="section hero" id="top">
+        <div>
+          <div class="hero-label">
+            <span class="hero-label-dot"></span>
+            Data, models, and decisions for complex Dynamic systems
+          </div>
+          <h1 class="hero-title">
+          EMITLab's research in&nbsp;&nbsp; <span>data‑, machine learning-,  and AI‑driven systems</span> &nbsp; enables robust and resilient communities</h1>
+          <p class="hero-blurb">
+            EMITLab in the Center for Assured and Scalable Data Engineering (CASCADE) at Arizona State University carries out research on&nbsp; data‑, machine learning-,  and AI‑driven systems that couple real‑world data,
+            simulations, and causal models to support informed and effective  decision making&nbsp; in critical complex dynamic systems, such as disasters, pandemics, water resources, and energy
+            infrastructure. Grounded in NSF and USACE‑funded work, including <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=1610282" target="_blank" rel="noopener" style="color: maroon;">DataStorm</a>,
+            <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=2125246" target="_blank" rel="noopener" style="color: maroon;">PanCommunity</a>, <a href="https://www.nsf.gov/awardsearch/show-award?AWD_ID=2435886" target="_blank" rel="noopener" style="color: maroon;">PANAX</a>,
+            <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=1909555" target="_blank" rel="noopener" style="color: maroon;">pCAR</a>,
+            <a href="https://causalbench.org" target="_blank" rel="noopener" style="color: maroon;">CausalBench</a>,
+            <a href="https://https://www.asu-newn.org"  target="_blank" rel="noopener" style="color: maroon;">Designing Nature to Enhance Resilience for Built Infrastructure in Western U.S. Landscape </a>,
+            <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=2309030" target="_blank" rel="noopener" style="color: maroon;">
+            PIRE: Building Decarbonization via AI‑empowered District Heat Pump System</a>, and the
+<a href="appex.org" target="_blank" rel="noopener" style="color: maroon;">
+          NSF Center for the Analysis of the Epidemic Expansion</a>,
+	    the lab turns sparse, noisy, and complex
+            data and models into actionable insights for resilient communities.
+          </p>
+          <div class="hero-meta">
+            <span class="hero-meta-pill">NSF &amp; USACE‑funded research</span>
+            <span class="hero-meta-pill">Disasters · Epidemics · Water · Energy</span>
+			<span class="hero-meta-pill">Data management &amp; analysis</span>
+            <span class="hero-meta-pill">Causal learning &amp; simulations</span>
+          </div>
+          <div class="hero-actions">
+			<a href="#about" class="btn-primary">Read mission &amp; vision</a>
+            <a href="#grants" class="btn-ghost">Explore grants &amp; themes →</a>
+          </div>
+        </div>
+
+        <div class="hero-orbit" aria-hidden="true">
+          <div class="hero-orbit-main">
+            <div>
+              <h2>EMITLab @ CASCADE</h2>
+              <p>Data &amp; AI platforms for hazards, epidemics, water and energy systems</p>
+            </div>
+          </div>
+          <div class="hero-orbit-ring"></div>
+          <div class="hero-orbit-chip">
+            <strong>
+              <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=1610282" target="_blank" rel="noopener">DataStorm</a>
+              /
+              <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=2125246" target="_blank" rel="noopener">PanCommunity</a>
+				/
+              <a href="https://www.nsf.gov/awardsearch/show-award/?AWD_ID=2412115" target="_blank" rel="noopener">APPEX</a>
+				/ 
+			   <a href="https://www.nsf.gov/awardsearch/show-award?AWD_ID=2435886" target="_blank" rel="noopener">PANAX</a>
+            </strong><br />
+            Coupling data streams with simulation ensembles for disasters and epidemics
+          </div>
+          <div class="hero-orbit-chip">
+            <strong>
+              <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=1909555" target="_blank" rel="noopener">pCAR</a>
+              /
+              <a href="https://causalbench.org" target="_blank" rel="noopener">CausalBench</a>
+            </strong><br />
+            Plausible causal discovery and benchmarking in complex, dynamic systems
+          </div>
+          <div class="hero-orbit-chip">
+            <strong> <a href="https://asu-newn.org" target="_blank" rel="noopener">EWN</a> /
+              <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=2309030" target="_blank" rel="noopener">PIRE</a>
+            </strong><br />
+            Nature‑based water infrastructure and AI‑enabled building and district energy systems
+          </div>
+        </div>
+      </section>
+
+      <!-- GRANTS & THEMES CALLOUTS -->
+      <section class="section" id="grants">
+        <div class="section-header">
+          <div>
+            <div class="section-kicker">Grants &amp; research themes</div>
+            <h2 class="section-title">How EMITLab’s funding shapes its research agenda</h2>
+          </div>
+          <p class="section-subtitle">
+            Research project, included those funded by NSF and USACE, anchor EMITLab’s work in high‑stakes settings (disaster planning, epidemic response,
+            sustainability, and  smart buildings) while driving advances in data management and analysis for trustable decision making.
+          </p>
+        </div>
+
+        <div class="grants-grid">
+          <!-- Data-enabled disasters -->
+          <article class="grant-card">
+            <div class="grant-highlight"></div>
+            <span class="grant-tag">
+              <span class="grant-tag-dot"></span>
+              Disasters
+            </span>
+            <h3 class="grant-title">
+              <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=1610282" target="_blank" rel="noopener">
+                DataStorm
+              </a>
+              &amp; Data‑enabled Disaster Platforms
+            </h3>
+            <p class="grant-sub">Infrastructures for exploring “alternative timelines” of disasters.</p>
+            <div class="grant-list">
+              <span class="pill">
+                <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=1610282" target="_blank" rel="noopener">
+                  DataStorm
+                </a>
+              </span>
+              <span class="pill">
+                <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=1610282" target="_blank" rel="noopener">
+                  DataStorm‑EM
+                </a>
+              </span>
+              <span class="pill">Simulation ensembles</span>
+              <span class="pill">Scenario analytics</span>
+            </div>
+            <p class="grant-body">
+              DataStorm develops data and computation fabrics that couple large‑scale simulations
+              with real‑world data streams to enable disaster planning and response.
+              EMITLab uses these platforms to help planners test hazard scenarios,
+              compare strategies, and understand where small changes in behavior or infrastructure
+              lead to large differences in outcomes.
+            </p>
+            <div class="grant-footer">
+              <span>→ Research theme:</span>
+              <strong>Data‑ and model-enabled disaster analytics</strong>
+            </div>
+          </article>
+
+          <!-- Epidemics & community response -->
+          <article class="grant-card">
+            <div class="grant-highlight"></div>
+            <span class="grant-tag">
+              <span class="grant-tag-dot"></span>
+              Epidemics &amp; communities
+            </span>
+            <h3 class="grant-title">
+              <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=2125246" target="_blank" rel="noopener">
+                PanCommunity
+              </a>,
+              <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=2200140" target="_blank" rel="noopener">
+              PREEMPT, </a>
+              
+              <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=2412115" target="_blank" rel="noopener">
+              APPEX </a>, and
+				<a href="https://www.nsf.gov/awardsearch/show-award?AWD_ID=2435886" target="_blank" rel="noopener">PANAX</a>
+            </h3>
+            <p class="grant-sub">Multi‑model platforms for pandemic prediction and response.</p>
+            <div class="grant-list">
+              <span class="pill">
+                <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=2125246" target="_blank" rel="noopener">
+                  PanCommunity
+                </a>
+              </span>
+              <span class="pill">
+                <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=2200140" target="_blank" rel="noopener">
+                  PREEMPT
+                </a>
+              </span>
+              <span class="pill">
+                <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=2412115" target="_blank" rel="noopener">
+                  APPEX
+                </a>
+              </span>
+            </div>
+            <p class="grant-body">
+              These projects integrate specialized epidemic, mobility, and behavior models with  data sources to
+              explore how interventions impact communities. EMITLab develops the data and model driven simulaiton and machine learning techniques, enabling decision‑makers to weigh health, economic, and social trade‑offs under uncertainty.
+            </p>
+            <div class="grant-footer">
+              <span>→ Research theme:</span>
+              <strong>Pandemics, interventions, and community response</strong>
+            </div>
+          </article>
+
+          <!-- Engineering With Nature -->
+          <article class="grant-card">
+            <div class="grant-highlight"></div>
+            <span class="grant-tag">
+              <span class="grant-tag-dot"></span>
+              Water &amp; nature‑based solutions
+            </span>
+            <h3 class="grant-title">Designing Nature to Enhance Resilience for Built Infrastructure</h3>
+            <p class="grant-sub">Data science for portfolios of natural &amp; built water infrastructure.</p>
+            <div class="grant-list">
+              <span class="pill">N‑EWN</span>
+              <span class="pill">Wetland prioritization</span>
+              <span class="pill">Nature‑based infrastructure</span>
+              <span class="pill">Streamflows</span>
+            </div>
+            <p class="grant-body">
+              Within N‑EWN, EMITLab develops spatio‑temporal models and causal tools to evaluate how wetlands, dams,
+              recharge basins, and other interventions affect flows, ecosystems, and communities. The project team extends this with reinforcement‑learning‑driven causal discovery and hydrologic forecasting.
+            </p>
+            <div class="grant-footer">
+              <span>→ Research theme:</span>
+              <strong>Engineering With Nature &amp; water‑resources analytics</strong>
+            </div>
+          </article>
+
+          <!-- Smart buildings & decarbonization -->
+          <article class="grant-card">
+            <div class="grant-highlight"></div>
+            <span class="grant-tag">
+              <span class="grant-tag-dot"></span>
+              Buildings &amp; decarbonization
+            </span>
+            <h3 class="grant-title">
+              <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=1339835" target="_blank" rel="noopener">
+                E‑SDMS
+              </a>,
+              <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=1629888" target="_blank" rel="noopener">
+                GEARS
+              </a>,
+              <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=1827757" target="_blank" rel="noopener">
+                PFI‑BDMC
+              </a>
+              &amp;
+              <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=2309030" target="_blank" rel="noopener">
+                PIRE
+              </a>
+            </h3>
+            <p class="grant-sub">Data platforms and AI for efficient, low‑carbon building systems.</p>
+            <div class="grant-list">
+              <span class="pill">
+                <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=1339835" target="_blank" rel="noopener">
+                  E‑SDMS
+                </a>
+              </span>
+              <span class="pill">
+                  CYDRES
+              </span>
+              <span class="pill">
+                <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=1827757" target="_blank" rel="noopener">
+                  PFI‑RC BDMC
+                </a>
+              </span>
+              <span class="pill">
+                <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=2309030" target="_blank" rel="noopener">
+                  PIRE
+                </a>
+              </span>
+              <span class="pill">HVAC fault diagnosis</span>
+            </div>
+            <p class="grant-body">
+              From energy‑simulation data management to AI‑empowered district heat pump systems, these efforts use data
+              engineering and learning to detect HVAC faults, optimize operation, and support human‑centered,
+              decarbonized districts. EMITLab’s models must work across testbeds, data regimes, and operating
+              conditions.
+            </p>
+            <div class="grant-footer">
+              <span>→ Research theme:</span>
+              <strong>Smart buildings, HVAC systems &amp; decarbonized districts</strong>
+            </div>
+          </article>
+
+
+
+          <!-- Causal learning -->
+          <article class="grant-card">
+            <div class="grant-highlight"></div>
+            <span class="grant-tag">
+              <span class="grant-tag-dot"></span>
+              Causal learning &amp; benchmarks
+            </span>
+            <h3 class="grant-title">
+              <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=1909555" target="_blank" rel="noopener">
+                pCAR
+              </a>
+              &amp;
+              <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=2311716" target="_blank" rel="noopener">
+                CausalBench
+              </a>
+            </h3>
+            <p class="grant-sub">Plausible causal discovery and reproducible evaluation.</p>
+            <div class="grant-list">
+              <span class="pill">
+                <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=1909555" target="_blank" rel="noopener">
+                  pCAR
+                </a>
+              </span>
+              <span class="pill">
+                <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=2311716" target="_blank" rel="noopener">
+                  CausalBench
+                </a>
+              </span>
+              <span class="pill">Spatio‑temporal causal graphs</span>
+              <span class="pill">Benchmark services</span>
+            </div>
+            <p class="grant-body">
+              pCAR investigates how to uncover plausible causal structure in noisy, dynamic data, while CausalBench
+              focuses on rigorous benchmarks and services for testing causal algorithms. Together, they ground
+              EMITLab’s work on spatio-temporal forecasting, infrastructure planning, and decision platforms that leverage
+              causal reasoning.
+            </p>
+            <div class="grant-footer">
+              <span>→ Research theme:</span>
+              <strong>Causal discovery &amp; trustworthy inference</strong>
+            </div>
+          </article>
+
+	  
+          <!-- Saliency & time-series -->
+          <article class="grant-card">
+            <div class="grant-highlight"></div>
+            <span class="grant-tag">
+              <span class="grant-tag-dot"></span>
+              Time‑series understanding
+            </span>
+            <h3 class="grant-title">Multivariate Time‑series Models</h3>
+            <p class="grant-sub">Saliency‑aware representations for noisy, multiscale sequences.</p>
+            <div class="grant-list">
+              <span class="pill">Multivariate time‑series</span>
+              <span class="pill">Cross‑attention</span>
+              <span class="pill">Sensor &amp; infrastructure data</span>
+            </div>
+            <p class="grant-body">
+              EMITLab develops models and architectures that highlight salient subsequences in multivariate
+              time‑series and fuse raw and salient views via cross‑attention. This research is supported by a
+              constellation of NSF awards on epidemic simulations, building data management, big data, causal learning,
+              and building services, including
+              <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=1318788" target="_blank" rel="noopener">
+                Data Management for Real‑Time Data Driven Epidemic Spread Simulations
+              </a>,
+              <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=1339835" target="_blank" rel="noopener">
+                E‑SDMS
+              </a>,
+              <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=1610282" target="_blank" rel="noopener">
+                DataStorm
+              </a>,
+              <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=1633381" target="_blank" rel="noopener">
+                BIGDATA: Discovering Context‑Sensitive Impact in Complex Systems
+              </a>,
+              <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=1827757" target="_blank" rel="noopener">
+                PFI‑BDMC
+              </a>,
+              and
+              <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=1909555" target="_blank" rel="noopener">
+                pCAR
+              </a>.
+            </p>
+            <div class="grant-footer">
+              <span>→ Research theme:</span>
+              <strong>Saliency‑driven time‑series &amp; multimodal data</strong>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- MISSION / VISION / RESEARCH OVERVIEW -->
+      <section class="section" id="about">
+        <div class="section-header">
+          <div>
+            <div class="section-kicker">Mission, vision &amp; research</div>
+            <h2 class="section-title">How EMITLab thinks about data, models, and decisions</h2>
+          </div>
+        </div>
+
+        <div class="two-col" id="research">
+          <div class="box">
+            <h3>Mission</h3>
+            <p>
+              EMITLab’s mission is to design data and AI systems that
+              make complex physical and social systems understandable,
+             actionable, and resilient. Rather than assuming perfect
+              data and unlimited resources, the lab embraces sparcity, noise,
+              heterogeneity, and uncertainty and builds platforms that
+               support critical decisions in disasters,
+              pandemics, water management, and energy systems.
+            </p>
+            <ul class="list">
+              <li>Couple heterogeneous data streams with multi‑model simulations.</li>
+              <li>Embed causal reasoning into forecasting and scenario analysis.</li>
+              <li>Balance data availability, accuracy, robustness, and resource constraints in real deployments.</li>
+            </ul>
+          </div>
+
+          <div class="box">
+            <h3>Vision</h3>
+            <p>
+              EMITLab envisions computing infrastructures for data, models, and causal inference that are as dependable. In this vision, planners and decsion makers can explore “what‑if” futures through
+              interactive simulations/digital twins, assess nature‑based interventions with causal evidence, and operate buildings
+              and districts that are both comfortable and efficient.
+            </p>
+            <ul class="list">
+              <li>Interactive, data‑calibrated twins for hazards, epidemics, and infrastructure.</li>
+              <li>Causal, spatio‑temporal awareness in water, energy, and building systems.</li>
+              <li>Transparent, benchmarked algorithms that stakeholders can trust.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+<!-- ================= People  ================= -->
+      <section class="section" id="people">
+
+<style>
+:root {
+  --asu-maroon: #7b1420;
+  --border: #e2e4e7;
+  --bg-soft: #f6f7f8;
+  --link: #0a58ca;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial;
+  margin: 0;
+  padding: 32px;
+  background: #ffffff;
+  color: #222;
+}
+
+.container {
+  max-width: 1150px;
+  margin: 0 auto;
+}
+
+h1 {
+  color: var(--asu-maroon);
+  margin-bottom: 6px;
+}
+
+.subtitle {
+  color: #555;
+  margin-bottom: 0px;
+}
+
+.section {
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
+.section h2 {
+  color: var(--asu-maroon);
+  border-bottom: 3px solid var(--asu-maroon);
+  padding-bottom: 6px;
+  margin-bottom: 24px;
+}
+
+.card {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px 22px;
+  margin-bottom: 16px;
+  background: #fff;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+	
+.card-content {
+  flex: 1;
+}
+
+.card-photo {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;   /* keeps image square */
+  border-radius: 4px;  /* optional: slight rounding */
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.name {
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+
+.badge {
+  background: var(--bg-soft);
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 0.8rem;
+  color: #444;
+}
+
+.title {
+  font-style: italic;
+  margin: 6px 0 10px;
+}
+
+a.button {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 6px;
+  background: var(--link);
+  color: #fff;
+  font-size: 0.85rem;
+  text-decoration: none;
+}
+
+a.button:hover {
+  background: #084298;
+}
+
+footer {
+  margin-top: 80px;
+  font-size: 0.85rem;
+  color: #666;
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
+}
+</style>
+		  
+<div class="section-kicker">People</div>
+		  
+<div class="section-header">
+    <div>
+    <h2 class="section-title">Faculty</h2>
+    </div>
+    <p class="section-subtitle">     
+    </p>
+  </div>
+			  
+<div class="section">
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">K. Selcuk Candan</div><div class="badge">PhD</div></div>
+	<div class="title">President's Professor of Computer Science and Engineering, SCAI, ASU </div>
+	<div class="title">Director, ASU Center for the Assured and Scalable Data Engineering (CASCADE)  </div>
+	<div class="title">Associate Director, NSF Center for the Analysis and Prediction of Pandemic Expansion (APPEX)  </div>
+	  <a class="button" href="https://kscandan.site">Learn more...</a>
+	</div></div>
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">Maria Luisa Sapino</div><div class="badge">PhD</div></div><div class="title">Adjunct Professor of Computer Science and Engineering, SCAI, ASU </div>
+	<div class="title">Full Professor of Computer Science, University of Turin, Italy </div>
+	 <a class="button" href="https://informatica.unito.it/persone/maria.sapino">Learn more...</a>
+	</div></div>
+		  </div>
+		  
+<div class="section-header">
+    <div>
+    <h2 class="section-title">Post-Doctoral Researcher</h2>
+    </div>
+    <p class="section-subtitle">     
+    </p>
+  </div>	
+		  
+<div class="section">
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">Geunsoo Jang</div><div class="badge">PhD</div></div><div class="title">NSF Center for the Analysis and Prediction of the epidemic Expension (APPEX) </div>
+	  <a class="button" href="https://search.asu.edu/profile/5462974">Learn more...</a>
+	</div></div>
+		  </div>
+		  
+<div class="section-header">
+    <div>
+    <h2 class="section-title">Current Students</h2>
+    </div>
+    <p class="section-subtitle">     Current students advised by EMITLab faculty, including MS, McS, and PhD theses.
+      Public thesis links are provided where available via ASU KEEP, CORE, or other repositories.
+    </p>
+  </div>
+		  
+		 <div class="section">
+<!-- ================= PhD ================= -->
+<h2>Current Doctoral Students (PhD)</h2> 
+
+<div class="card">
+  <div class="card-content"><div class="card-header"><div class="name">Fahim Tasneema Azad</div><div class="badge">Ongoing · PhD</div></div>
+  <div class="title">Tasnema's research focuses on machine learning and data science. Her work emphasizes time-series and spatio-temporal modeling, causal inference, and forecasting in complex dynamic systems. She applies these methods to real-world problems, such as epidemic  modeling, situational awareness, and data-driven decision support.</div>
+  <a class="button" href="https://scholar.google.com/citations?user=iIECunIAAAAJ&hl=en">About</a>
+</div></div>
+<div class="card">
+  <div class="card-content"><div class="card-header"><div class="name">Ertugrul Coban</div><div class="badge">Ongoing · PhD</div></div>
+  <div class="title"> Ertugrul's ongoing research includes projects in causal machine learning, such as the development of CausalBench, a benchmarking platform for evaluating causal discovery and causal inference methods within machine learning contexts. This research supports the broader goal of improving the accuracy and reproducibility of causal learning models across diverse data and application scenarios. </div>
+  <a class="button" href="https://scholar.google.com/citations?user=fCyjuWMAAAAJ&hl=en">About</a>
+</div></div>		
+<div class="card">
+  <div class="card-content"><div class="card-header"><div class="name">Abhinav Gorantla</div><div class="badge">Ongoing · PhD</div></div>
+  <div class="title">Abhinav's research focuses on machine learning and multi-objective optimization, with active work in causal machine learning and benchmarking frameworks. He contributes to developing CausalBench, a unified benchmarking platform for evaluating causal learning models and metrics, and works on optimized algorithms and causal analysis systems. His research spans both theoretical tools for causal ML evaluation and practical implementations of data-driven systems. </div>
+  <a class="button" href="https://abhinavgorantla.me">About</a>
+</div></div>			 
+<div class="card">
+  <div class="card-content"><div class="card-header"><div class="name">Ahmet Kapkic</div><div class="badge">Ongoing · PhD</div></div>
+  <div class="title">In addition to his contributions to CausalBench, Ahmet's&nbsp; work within the context of the PIRE project integrates causally informed methods into broader systems research, emphasizing causal discovery from complex, observational data. He is  developing approaches that leverage causally-informed Petri nets to enable process discovery from time-series and system logs, blending formal process modeling with causal reasoning to better understand dynamic system behavior. </div>
+  <a class="button" href="https://scholar.google.com/citations?user=dHu5ehsAAAAJ&hl=en">About</a>
+</div>	</div>		
+<div class="card">
+  <div class="card-content"><div class="card-header"><div class="name">Pratanu Mandal</div><div class="badge">Ongoing · PhD</div></div>
+  <div class="title">Pratanu's research advances causally informed data management and causal learning, particularly through developing benchmark frameworks like CausalBench that provide standardized datasets, algorithms, and metrics to evaluate causal inference methods.  His research aims to overcome limitations of traditional data management techniques by leveraging causal knowledge. His work also&nbsp; includes application of spatio-temporal deep-learning and reinforcement learning approaches to complex prediction tasks, integrating causal insights into data-driven modeling. </div>
+  <a class="button" href="https://scholar.google.com/citations?user=ItnXbPoAAAAJ&hl=en">About</a>
+</div></div>			 
+<!-- ================= MS ================= -->
+<h2>Current Master Students (MS)</h2> 	
+N/A			 
+			 
+<!-- ================= Undergrad ================= -->
+<h2>Current Undergraduate Students (BS)</h2> 	
+<div class="card"><div class="card-content">
+<div class="card-header"><div class="name">Sanskar Srivastava</div><div class="badge">Ongoing · BS</div></div>
+<a class="button" href="https://www.linkedin.com/in/sanskarsri26">About</a>	
+</div></div>
+			 
+<!-- ================= High School ================= -->
+<h2>Current High School Students (BS)</h2> 	
+<div class="card"><div class="card-content">
+<div class="card-header">
+  <div class="name">Kanav Agarwal</div><div class="badge">Ongoing · K12</div></div>
+</div>	</div>
+<div class="card"><div class="card-content">
+<div class="card-header"><div class="name">Iraj Shroff</div><div class="badge">Ongoing · K12</div></div>
+</div>	</div>			 
+			 
+		  </div>			 
+<div class="section-header">
+    <div>
+    <h2 class="section-title">Alumni</h2>
+    </div>
+    <p class="section-subtitle">
+      Past students advised by EMITLab faculty, including MS, McS, and PhD theses.
+      Public thesis links are provided where available via ASU KEEP, CORE, or other repositories.
+    </p>
+  </div>
+
+<div class="section">
+<!-- ================= PhD ================= -->
+<h2>Past Doctoral Students (PhD)</h2>
+
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">Christopher Mayer</div><div class="badge">2005 · PhD</div></div><div class="title">Quality-based Replication of Freshness-Differentiated Web Applications</div></div></div>
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">Ping Lin</div><div class="badge">2006 · PhD</div></div><div class="title">PXStore: A Content- and Access- Privacy Preserving XML Data Store</div></div></div>
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">Lina Peng</div><div class="badge">2008 · PhD</div></div><div class="title">Quality-Adaptive Execution and Optimization of Media Processing Workflows</div></div></div>
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">Gisik Kown</div><div class="badge">2008 · PhD</div></div><div class="title">Decentralized Resource Location and Multimedia Service Execution</div></div></div>
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">Shibo Wu</div><div class="badge">2008 · PhD</div></div><div class="title">Power-Efficient Geographic Routing in Sensor Networks</div></div></div>
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">Jong Wook Kim</div><div class="badge">2009 · PhD</div></div><div class="title">Exploiting Structured Knowledge for Segmentation, Enrichment, and Summarization of Data</div></div></div>
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">Yan Qi</div><div class="badge">2009 · PhD</div></div><div class="title">System Support for Exploration and Expert Feedback in Resolving Conflicts</div></div></div>
+
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">Mithila Nagendra</div><div class="badge">2014 · PhD</div></div><div class="title">Efficient Processing of Skyline Queries on Static Data Sources, Data Streams and Incomplete Datasets</div></div></div>
+
+<div class="card"><div class="card-content">
+  <div class="card-header"><div class="name">Mijung Kim</div><div class="badge">2014 · PhD</div></div>
+  <div class="title">TensorDB and Tensor-Relational Model (TRM)</div>
+  <a class="button" href="https://keep.lib.asu.edu/items/116777">ASU KEEP</a>
+</div></div>
+
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">Parth Nagarkar</div><div class="badge">2017 · PhD</div></div><div class="title">Query Workload-aware Index Structures for Range Searches</div></div></div>
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">Jung Hyun Kim</div><div class="badge">2017 · PhD</div></div><div class="title">Efficient and Effective Node Proximity Computation in Graphs</div></div></div>
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">Xinsheng Li</div><div class="badge">2018 · PhD</div></div><div class="title">On Density and Noise Challenges in Tensor-Based Data Analytics</div></div></div>
+
+<div class="card"><div class="card-content">
+  <div class="card-header"><div class="name">Xilun Chen</div><div class="badge">2018 · PhD</div></div>
+  <div class="title">Efficient Incremental Model Learning on Data Streams</div>
+  <a class="button" href="https://keep.lib.asu.edu/items/157543">ASU KEEP</a>
+</div></div>
+
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">Sicong Liu</div><div class="badge">2020 · PhD</div></div><div class="title">Feature Extraction from Multi-variate Time Series and Resource-Aware Indexing</div></div></div>
+
+<div class="card"><div class="card-content">
+  <div class="card-header"><div class="name">Yash Garg</div><div class="badge">2020 · PhD</div></div>
+  <div class="title">On Feature Saliency and Deep Neural Networks</div>
+  <a class="button" href="https://keep.lib.asu.edu/items/158774">ASU KEEP</a>
+</div></div>
+
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">Shengyu Huang</div><div class="badge">2021 · PhD</div></div><div class="title">Optimization of Block-based Tensor Decompositions</div></div></div>
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">Hans Behrens</div><div class="badge">2023 · PhD</div></div><div class="title">On Counter-Adversarial Resilience in Permeable Networked Systems</div></div></div>
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">Mao-Lin Li</div><div class="badge">2024 · PhD</div></div><div class="title">Searching Latent Semantics in Complex Data</div></div></div>
+
+<div class="card"><div class="card-content">
+  <div class="card-header"><div class="name">Manjusha Ravindranath</div><div class="badge">2024 · PhD</div></div>
+  <div class="title">Metadata Supported Multi-Variate Multi-Scale Attention</div>
+  <a class="button" href="https://d1rbsgppyrdqq4.cloudfront.net/s3fs-public/c7/Ravindranath_asu_0010E_23722.pdf">View PDF</a>
+</div></div>
+
+</div>  
+<!-- ================= MS / McS ================= -->
+<div class="section">
+<h2>Past Master’s Students (MS / McS)</h2>
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">Lakshmi Priya Mahalingam</div><div class="badge">MS</div></div><div class="title">Query Optimization in Multimedia Databases</div></div></div>
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">Amit Jindal</div><div class="badge">MS</div></div><div class="title">Quorums-Replication of Data in Distributed Systems</div></div> </div>
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">Prakash Yamuna</div><div class="badge">MS</div></div><div class="title">Similarity based Retrieval and Indexing of Temporal Structures</div></div> </div>
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">Namhee Cho</div><div class="badge">McS</div></div><div class="title">Design and Implementation of a VRML Repository</div></div> </div>
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">Venkatesh Sangam</div><div class="badge">MS</div></div><div class="title">Failure Handling in Quality-Quorums</div></div> </div>
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">Nikhil Iyer</div><div class="badge">MS</div></div><div class="title">Server Replication and Object Placement in a Push-based System</div></div> </div>
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">J. Ramamoorthy</div><div class="badge">MS</div></div><div class="title">RCDEX: An Index Structure for Sequence Matching in the Presence of Commutations</div></div> </div>
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">Prachi Tyagi</div><div class="badge">MS</div></div><div class="title">Continuous Realtime Indexing</div></div> </div>
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">Ling Xu</div><div class="badge">McS</div></div><div class="title">Text Recognition and Correction</div></div> </div>
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">Reshma Suvarna</div><div class="badge">MS</div></div><div class="title">RDF indexing and retrieval</div></div> </div>
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">Maria Goveas</div><div class="badge">MS</div></div><div class="title">Context-aware Text Segmentation</div></div> </div>
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">Atul Kolhatkar</div><div class="badge">MS</div></div><div class="title">Text Summarization using Topic Development Patterns</div></div> </div>
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">Sangwoo Han</div><div class="badge">MS</div></div><div class="title">Automated Reorganization of Text Segments Obtained from Multiple Documents</div></div> </div>
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">Vishal Shah</div><div class="badge">MS</div></div><div class="title">MIST: On Most Informational Snippet Detection in a Document Corpus</div></div> </div>
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">Hardik Doshi</div><div class="badge">MS</div></div><div class="title">OER-HMM: An Observations Equivalence Rules Based Hidden Markov Model</div></div> </div>
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">Venkata Cherukuri</div><div class="badge">MS</div></div><div class="title">Mobility Aware Read/Write Protocol for RFID Rich Environments</div></div> </div>
+
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">Mike Balzer</div><div class="badge">McS</div></div></div> </div>
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">Sim Phor Na</div><div class="badge">McS</div></div></div> </div>
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">Mingyi Shu</div><div class="badge">McS</div></div></div> </div>
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">Robert Ivey</div><div class="badge">McS</div></div></div> </div>
+
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">Renwei Yu</div><div class="badge">2011 · MS</div></div><div class="title">Time Efficient and Quality Effective K Nearest Neighbor Search in High Dimension Space</div></div> </div>
+
+<div class="card"><div class="card-content">
+  <div class="card-header"><div class="name">Xinxin Wang</div><div class="badge">2011 · MS</div></div>
+  <div class="title">CPR: Complex Pattern Ranking for Evaluating Top-k Pattern Queries over Event Streams</div>
+  <a class="button" href="https://www.researchgate.net/profile/K-Selcuk-Candan/publication/220796273_Complex_Pattern_Ranking_CPR_Evaluating_top-k_pattern_queries_over_event_streams/links/53fb6a2b0cf2dca8fffe6bd8/Complex-Pattern-Ranking-CPR-Evaluating-top-k-pattern-queries-over-event-streams.pdf">View PDF</a>
+</div> </div>
+
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">Tejas Bapat</div><div class="badge">2009 · MS</div></div><div class="title">Spsearch: Enabling Spatial Search in a RFID Rich Environment</div></div> </div>
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">Juan P. Cedeño</div><div class="badge">2010 · MS</div></div><div class="title">A Framework for Top-K Queries over Weighted RDF Graphs</div></div> </div>
+
+<div class="card"><div class="card-content">
+  <div class="card-header"><div class="name">Shruti Gaur</div><div class="badge">2011 · MS</div></div>
+  <div class="title">On Summarization of Non-Linear Narratives</div>
+  <a class="button" href="https://keep.lib.asu.edu/items/150147">ASU KEEP</a>
+</div> </div>
+
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">Mithila Nagendra</div><div class="badge">2010 · MS</div></div><div class="title">Efficient Processing of Join-based Skyline Queries</div></div> </div>
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">Mijung Kim</div><div class="badge">McS</div></div></div> </div>
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">Songling Liu</div><div class="badge">2012 · McS</div></div></div> </div>
+
+<div class="card"><div class="card-content">
+  <div class="card-header"><div class="name">Wei Huang</div><div class="badge">2011 · MS</div></div>
+  <div class="title">Sequence-based Web Page Template Detection</div>
+  <a class="button" href="https://keep.lib.asu.edu/items/149972">ASU KEEP</a>
+</div> </div>
+
+<div class="card"><div class="card-content">
+  <div class="card-header"><div class="name">Xiaolan Wang</div><div class="badge">2013 · MS</div></div>
+  <div class="title">Leveraging Metadata for Extracting Robust Multi-Variate Temporal Features</div>
+  <a class="button" href="https://core.ac.uk/download/pdf/79567357.pdf">View PDF</a>
+</div> </div>
+
+<div class="card"><div class="card-content">
+  <div class="card-header"><div class="name">Sriram Rathinavelu</div><div class="badge">2014 · MS</div></div>
+  <div class="title">Space Adaptation Techniques for Preference Oriented Skyline Processing</div>
+  <a class="button" href="https://core.ac.uk/download/pdf/79574555.pdf">View PDF</a>
+</div> </div>
+
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">Aneesha Bhat</div><div class="badge">2015 · MS</div></div><div class="title">Locality Sensitive Indexing for Efficient High-Dimensional Query Answering</div></div> </div>
+
+<div class="card"><div class="card-content">
+  <div class="card-header"><div class="name">Yash Garg</div><div class="badge">2015 · MS</div></div>
+  <div class="title">Multi-variate Time Series Measures and Their Robustness against Temporal Asynchrony</div>
+  <a class="button" href="https://keep.lib.asu.edu/items/154174">ASU KEEP</a>
+</div> </div>
+
+<div class="card"><div class="card-content">
+  <div class="card-header"><div class="name">Ashish Gadkari</div><div class="badge">2018 · MS</div></div>
+  <div class="title">Load-balanced Range Query Workload Partitioning for cSHB Indexes</div>
+  <a class="button" href="https://core.ac.uk/download/pdf/195379981.pdf">View PDF</a>
+</div> </div>
+
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">Manoj Tiwaskar</div><div class="badge">2021 · MS</div></div><div class="title">Selego: Robust Variate Selection for Accurate Time Series Forecasting</div></div> </div>
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">Vasishta Harekal</div><div class="badge">2020 · MS (non-thesis)</div></div></div> </div>
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">Ajay Rana</div><div class="badge">2021 · MS (non-thesis)</div></div></div> </div>
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">MD Shadab</div><div class="badge">2020 · MS (non-thesis)</div></div></div> </div>
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">Fateh Singh</div><div class="badge">2022 · MS (non-thesis)</div></div></div> </div>
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">Shubodeep Mitra</div><div class="badge">MS (thesis)</div></div></div> </div>
+<div class="card"><div class="card-content"><div class="card-header"><div class="name">Abhinav Gorantla</div><div class="badge">MS (thesis)</div></div></div> </div>
+
+
+
+</div>
+
+</section>
+
+      
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        <div>
+			© EMITLab · <a href="https://asu.edu/">Arizona State University</a> ·   <a href="https://scai.asu.edu/">SCAI  </a> · <a href="https://cascade.asu.edu/" target="_blank" rel="noopener">
+            ASU Center for Assured and Scalable Data Engineering (CASCADE)
+          </a>
+        </div>
+        <div class="footer-links">
+          <a href="#top">Back to top</a>
+		  <a href="#about">Mission &amp; vision</a>
+          <a href="#grants">Grants &amp; themes</a>
+          <a href="#peole">People</a>
+        </div>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>
