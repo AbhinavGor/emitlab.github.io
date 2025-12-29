@@ -678,6 +678,47 @@
   .btn { background:#f1f1f1; border:1px solid #ddd; padding:6px 8px; border-radius:6px; cursor:pointer; }
   .btn:focus { outline:2px solid #7fb4ff; }
 
+  /* NAVIGATE DROPDOWN */
+
+  .nav-dropdown {
+  position: relative;
+  display: inline-block;
+  }
+
+  
+.dropdown-toggle {
+  cursor: pointer;
+}
+
+.dropdown-menu {
+    display: none;
+    color: black;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  min-width: 120px;
+  border: 1px solid #ddd;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+  z-index: 1000;
+}
+
+.dropdown-menu a {
+  display: block;
+  padding: 8px 12px;
+  white-space: nowrap;
+}
+
+.dropdown-menu a:hover {
+    background: #f4f4f4;
+  color: darkred;
+}
+
+
+/* Show dropdown on hover */
+.nav-dropdown:hover .dropdown-menu {
+  display: block;
+}
 
     
   </style>
@@ -697,12 +738,31 @@
           </div>
         </div>
         <div class="nav-right">
+
+
+	  
           <nav class="nav-links">
             <a href="#research">Research</a>
-			<a href="#about">Mission</a>  
-            <a href="#grants">Grants &amp; Themes</a>
+	    <a href="#about">Mission</a>  
+	    <a href="#grants">Grants &amp; Themes</a>
+
+    <!-- Projects dropdown -->
+    <div class="nav-dropdown">
+      <a href="#projects" class="dropdown-toggle">Projects ▾</a>
+      <div class="dropdown-menu">
+        <a href="https://causalbench.org">CausalBench</a>
+	 <a href="https://asu-newn.org">Engineering with Nature</a>
+         <a href="https://pancommunity.org">PanCommunity</a>
+	 <a href="https://appex.org">APPEX</a>
+      </div>
+    </div>
+	    
 	    <a href="#people">People</a>
           </nav>
+
+
+
+	  
           <!-- CASCADE reference + link -->
           <a
             href="https://cascade.asu.edu/"
