@@ -177,6 +177,84 @@
       color: var(--asu-gold);
     }
 
+    /* Responsive navigation for mobile */
+    @media (max-width: 768px) {
+      .nav-inner {
+        padding: 0.4rem 1rem;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+      }
+
+      .nav-left {
+        gap: 0.6rem;
+        flex: 1;
+        min-width: 0;
+      }
+
+      .nav-logo-img {
+        height: 40px;
+      }
+
+      .nav-title {
+        gap: 0.1rem;
+        min-width: 0;
+      }
+
+      .nav-title-main {
+        font-size: 0.85rem;
+        letter-spacing: 0.04em;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .nav-title-sub {
+        font-size: 0.65rem;
+        display: none; /* Hide subtitle on mobile to save space */
+      }
+
+      .nav-right {
+        gap: 0.6rem;
+        flex-wrap: nowrap;
+      }
+
+      .nav-links {
+        gap: 0.6rem;
+        font-size: 0.75rem;
+      }
+
+      .nav-chip {
+        padding: 0.2rem 0.6rem;
+        font-size: 0.65rem;
+        letter-spacing: 0.08em;
+        display: none; /* Hide CASCADE badge on mobile to save space */
+      }
+    }
+
+    @media (max-width: 480px) {
+      .nav-inner {
+        padding: 0.35rem 0.75rem;
+        gap: 0.5rem;
+      }
+
+      .nav-logo-img {
+        height: 36px;
+      }
+
+      .nav-title-main {
+        font-size: 0.75rem;
+      }
+
+      .nav-links {
+        gap: 0.5rem;
+        font-size: 0.7rem;
+      }
+
+      /* Hide less important nav items on very small screens */
+      .nav-links a:nth-child(2) {
+        display: none; /* Hide "Mission" */
+      }
+    }
+
     main {
       flex: 1;
     }
