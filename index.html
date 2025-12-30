@@ -861,6 +861,228 @@
 
     <main>
 
+
+
+<!----- PUBLICATIONS TICKER --->
+<section id="dblp-newsreel-widget">
+
+  <!-- ======================
+       STYLES (FULLY SCOPED)
+       ====================== -->
+  <style>
+    #dblp-newsreel-widget {
+      font-family: system-ui, Arial, sans-serif;
+     /* color: #e6eef8;*/
+    /*  background: #0b1220;*/
+      padding: 16px;
+      border-radius: 10px;
+      border: 1px solid darkred;
+      max-width: 100%;
+    }
+
+    #dblp-newsreel-widget * {
+      box-sizing: border-box;
+    }
+
+    #dblp-newsreel-widget h2 {
+      font-size: 18px;
+      margin: 0 0 10px;
+    }
+
+    #dblp-newsreel-widget .controls {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 6px;
+    }
+
+    #dblp-newsreel-widget input,
+    #dblp-newsreel-widget button {
+      padding: 6px 8px;
+      border-radius: 6px;
+      border: 1px solid darkred;
+      background: #8C1D40;
+      color: #e6eef8;
+      font-size: 13px;
+    }
+
+    #dblp-newsreel-widget button {
+      cursor: pointer;
+    }
+
+    #dblp-newsreel-widget .resultCount {
+      font-size: 12px;
+      /*color: #9fb0c9;*/
+      margin-bottom: 10px;
+    }
+
+    #dblp-newsreel-widget .viewport {
+      overflow: hidden;
+    }
+
+    #dblp-newsreel-widget .reel {
+      display: flex;
+      gap: 16px;
+      will-change: transform;
+    }
+
+    #dblp-newsreel-widget .card {
+	display: block;              /* hard reset */
+      width: 320px;
+      min-width: 320px;
+      height: 120px;
+      background: #FFD966;
+      border-radius: 8px;
+      padding: 10px;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    #dblp-newsreel-widget .card > * {
+  display: block;              /* force rows */
+  flex: none;
+}
+    #dblp-newsreel-widget .title {
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    #dblp-newsreel-widget .meta {
+      font-size: 9px;
+      color: #222;
+      margin-bottom: 6px;
+    }
+
+    #dblp-newsreel-widget a {
+      font-size: 9px;
+      color:  #8C1D40;
+      text-decoration: none;
+    }
+  </style>
+
+  <!-- ======================
+       MARKUP
+       ====================== -->
+  <h2>EMITLab Publications</h2>
+
+  <div class="controls">
+    <input class="extraKeywords" placeholder="Add keywords">
+    <input class="yearFrom" type="number" value="2023" min="1900">
+    <input class="yearTo" type="number" value="2025" min="1900">
+    <button class="searchBtn">Search</button>
+  </div>
+
+  <div class="resultCount"></div>
+
+  <div class="viewport">
+    <div class="reel"></div>
+  </div>
+
+  <!-- ======================
+       SCRIPT (FULLY SCOPED)
+       ====================== -->
+  <script>
+  (function () {
+    const ROOT = document.getElementById('dblp-newsreel-widget');
+
+    const BASE_QUERY = 'K. Selcuk Candan';
+    const FETCH_LIMIT = 1000;
+    const SCROLL_SPEED = 0.35;
+
+    const reel = ROOT.querySelector('.reel');
+    const resultCount = ROOT.querySelector('.resultCount');
+    const btn = ROOT.querySelector('.searchBtn');
+
+    let offset = 0;
+    let contentWidth = 0;
+    let rafId = null;
+
+    async function fetchDBLP(query) {
+      const url =
+        `https://dblp.org/search/publ/api?format=json&q=${encodeURIComponent(query)}&h=${FETCH_LIMIT}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      return data.result?.hits?.hit || [];
+    }
+
+    function makeCard(hit) {
+      const i = hit.info;
+      const authors = Array.isArray(i.authors?.author)
+        ? i.authors.author.map(a => a.text || a).join(', ')
+        : (i.authors?.author?.text || 'Unknown');
+
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <div class="title">${i.title}</div>
+        <a href="${i.url}" target="_blank" rel="noopener">View on DBLP</a>
+        <div class="meta">
+          ${authors}<br>
+          ${i.venue || ''}${i.year ? ' • ' + i.year : ''}
+        </div>
+      `;
+      return card;
+    }
+
+    function startScroll() {
+      cancelAnimationFrame(rafId);
+      offset = 0;
+
+      function step() {
+        offset -= SCROLL_SPEED;
+        if (-offset >= contentWidth / 2) offset = 0;
+        reel.style.transform = `translateX(${offset}px)`;
+        rafId = requestAnimationFrame(step);
+      }
+
+      rafId = requestAnimationFrame(step);
+    }
+
+    async function runSearch() {
+      reel.innerHTML = 'Loading…';
+      resultCount.textContent = '';
+
+      const extra = ROOT.querySelector('.extraKeywords').value.trim();
+      const query = extra ? `${BASE_QUERY} ${extra}` : BASE_QUERY;
+
+      const yFrom = parseInt(ROOT.querySelector('.yearFrom').value, 10);
+      const yTo = parseInt(ROOT.querySelector('.yearTo').value, 10);
+
+      const hits = await fetchDBLP(query);
+
+      const filtered = hits.filter(h => {
+        const y = parseInt(h.info.year, 10);
+        if (isNaN(y)) return false;
+        if (!isNaN(yFrom) && y < yFrom) return false;
+        if (!isNaN(yTo) && y > yTo) return false;
+        return true;
+      });
+
+      resultCount.textContent =
+        `Query: "${extra}" — ${filtered.length} matches (from ${hits.length})`;
+
+      reel.innerHTML = '';
+      if (!filtered.length) {
+        reel.textContent = 'No results';
+        return;
+      }
+
+      [...filtered, ...filtered].forEach(h => reel.appendChild(makeCard(h)));
+
+      requestAnimationFrame(() => {
+        contentWidth = reel.scrollWidth;
+        startScroll();
+      });
+    }
+
+    btn.addEventListener('click', runSearch);
+
+    runSearch(); // initial load
+  })();
+  </script>
+
+</section>
+		
       
       <!-- HERO / HOMEPAGE BLURB -->
       <section class="section hero" id="top">
