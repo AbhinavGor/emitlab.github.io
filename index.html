@@ -177,6 +177,84 @@
       color: var(--asu-gold);
     }
 
+    /* Responsive navigation for mobile */
+    @media (max-width: 768px) {
+      .nav-inner {
+        padding: 0.4rem 1rem;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+      }
+
+      .nav-left {
+        gap: 0.6rem;
+        flex: 1;
+        min-width: 0;
+      }
+
+      .nav-logo-img {
+        height: 40px;
+      }
+
+      .nav-title {
+        gap: 0.1rem;
+        min-width: 0;
+      }
+
+      .nav-title-main {
+        font-size: 0.85rem;
+        letter-spacing: 0.04em;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .nav-title-sub {
+        font-size: 0.65rem;
+        display: none; /* Hide subtitle on mobile to save space */
+      }
+
+      .nav-right {
+        gap: 0.6rem;
+        flex-wrap: nowrap;
+      }
+
+      .nav-links {
+        gap: 0.6rem;
+        font-size: 0.75rem;
+      }
+
+      .nav-chip {
+        padding: 0.2rem 0.6rem;
+        font-size: 0.65rem;
+        letter-spacing: 0.08em;
+        display: none; /* Hide CASCADE badge on mobile to save space */
+      }
+    }
+
+    @media (max-width: 480px) {
+      .nav-inner {
+        padding: 0.35rem 0.75rem;
+        gap: 0.5rem;
+      }
+
+      .nav-logo-img {
+        height: 36px;
+      }
+
+      .nav-title-main {
+        font-size: 0.75rem;
+      }
+
+      .nav-links {
+        gap: 0.5rem;
+        font-size: 0.7rem;
+      }
+
+      /* Hide less important nav items on very small screens */
+      .nav-links a:nth-child(2) {
+        display: none; /* Hide "Mission" */
+      }
+    }
+
     main {
       flex: 1;
     }
@@ -729,11 +807,16 @@
       <div class="nav-inner">
         <div class="nav-left">
           <!-- EMITLab logo image -->
-			<a href="#top"><img src="emitlab2.jpg" alt="EMITLab logo" class="nav-logo-img" /></a>
+			<a href="#top">
+			  <picture>
+			    <source media="(max-width: 768px)" srcset="/images/emitlab2_small.jpg">
+			    <img src="/images/emitlab2.jpg" alt="EMITLab logo" class="nav-logo-img" />
+			  </picture>
+			</a>
           <div class="nav-title">
 			  <span class="nav-title-main"><a href="#top">EMITLab</a></span>
             <span class="nav-title-sub">
-				<a href="https://scai.asu.edu">SCAI</a> · <a href="https://asu.edu">Arizona State University</a>
+				<a href="https://scai.asu.edu">SCAI</a>&nbsp;· <a href="https://asu.edu">Arizona&nbsp;State&nbsp;University</a>
             </span>
           </div>
         </div>
@@ -744,11 +827,11 @@
           <nav class="nav-links">
             <a href="#research">Research</a>
 	    <a href="#about">Mission</a>  
-	    <a href="#grants">Grants &amp; Themes</a>
+	    <a href="#grants">Grants&nbsp;&amp; Themes</a>
 
     <!-- Projects dropdown -->
     <div class="nav-dropdown">
-      <a href="#projects" class="dropdown-toggle">Projects ▾</a>
+      <a href="#projects" class="dropdown-toggle">Projects&nbsp;▾</a>
       <div class="dropdown-menu">
         <a href="https://causalbench.org">CausalBench</a>
 	 <a href="https://asu-newn.org">Engineering with Nature</a>
@@ -777,7 +860,6 @@
     </header>
 
     <main>
-
 
 
 
@@ -828,16 +910,6 @@
       cursor: pointer;
     }
 
-
-    #dblp-newsreel-widget .sourceToggle {
-      display: inline-flex;
-      gap: 6px;
-      align-items: center;
-      font-size: 13px;
-      color: #c7d7e8;
-    }
-
-    
     #dblp-newsreel-widget .resultCount {
       font-size: 12px;
       /*color: #9fb0c9;*/
@@ -895,15 +967,6 @@
 
   <div class="controls">
     <input class="extraKeywords" placeholder="Add keywords">
-
-    <label class="sourceToggle">
-      <input class="sourceDBLP" type="checkbox" checked> DBLP
-    </label>
-
-    <label class="sourceToggle">
-      <input class="sourceSS" type="checkbox" checked> Semantic Scholar
-    </label>
-    
     <input class="yearFrom" type="number" value="2023" min="1900">
     <input class="yearTo" type="number" value="2025" min="1900">
     <button class="searchBtn">Search</button>
@@ -918,104 +981,30 @@
   <!-- ======================
        SCRIPT (FULLY SCOPED)
        ====================== -->
-
   <script>
   (function () {
     const ROOT = document.getElementById('dblp-newsreel-widget');
 
-    // keep original names where possible
-    const BASE_QUERY = 'K. Selcuk Candan';        // fixed base
-    const DBLP_FETCH_LIMIT = 500;           // used for both sources
-    const SS_FETCH_LIMIT = 100;           // used for both sources
-
-    const SCROLL_SPEED = 0.8;         // px per frame
+    const BASE_QUERY = 'K. Selcuk Candan';
+    const FETCH_LIMIT = 1000;
+    const SCROLL_SPEED = 0.35;
 
     const reel = ROOT.querySelector('.reel');
     const resultCount = ROOT.querySelector('.resultCount');
     const btn = ROOT.querySelector('.searchBtn');
-    const inputExtra = ROOT.querySelector('.extraKeywords');
-    const cbDBLP = ROOT.querySelector('.sourceDBLP');
-    const cbSS = ROOT.querySelector('.sourceSS');
 
     let offset = 0;
     let contentWidth = 0;
     let rafId = null;
 
-    /* --------------------------
-       DBLP fetch (keeps same shape)
-       -------------------------- */
     async function fetchDBLP(query) {
       const url =
-        `https://dblp.org/search/publ/api?format=json&q=${encodeURIComponent(query)}&h=${DBLP_FETCH_LIMIT}`;
+        `https://dblp.org/search/publ/api?format=json&q=${encodeURIComponent(query)}&h=${FETCH_LIMIT}`;
       const res = await fetch(url);
-      if (!res.ok) throw new Error('DBLP request failed');
       const data = await res.json();
-      // return in original hit style (array of {info: {...}})
       return data.result?.hits?.hit || [];
     }
 
-    /* --------------------------
-       Semantic Scholar fetch
-       maps results to same hit.info shape used by DBLP
-       -------------------------- */
-
-async function fetchSemantic(query) {
-  try {
-    const fields = 'title,authors,year,venue,url';
-/*
-      const url =
-      `https://api.semanticscholar.org/graph/v1/paper/search` +
-      `?query=${encodeURIComponent(query)}` +
-      `&limit=${SS_FETCH_LIMIT}` +
-	    `&fields=${fields}`;
-      
-*/
-
-    const url = `/api/semantic?q=${encodeURIComponent(query)}`;
-
-      
-    const res = await fetch(url, {
-      headers: {
-        // This header helps in some environments
-        'Accept': 'application/json'
-      }
-    });
-
-    if (!res.ok) {
-      console.warn('Semantic Scholar HTTP error:', res.status);
-      return [];
-    }
-
-    const json = await res.json();
-    const papers = json.data || [];
-
-    return papers.map(p => ({
-      info: {
-        title: p.title || '',
-        authors: { author: (p.authors || []).map(a => ({ text: a.name })) },
-        venue: p.venue || '',
-        year: p.year || '',
-        url: p.url || (p.paperId ? `https://www.semanticscholar.org/paper/${p.paperId}` : ''),
-        _source: 'semantic'
-      }
-    }));
-  } catch (err) {
-    console.warn('Semantic Scholar fetch failed (browser CORS):', err);
-    return []; // ← graceful fallback
-  }
-}
-      
-
-    /* --------------------------
-       helper: normalize title for dedupe
-       -------------------------- */
-    function normalizeTitle(t) {
-      return (t || '').replace(/\s+/g,' ').trim().toLowerCase();
-    }
-
-    /* --------------------------
-       card rendering (unchanged)
-       -------------------------- */
     function makeCard(hit) {
       const i = hit.info;
       const authors = Array.isArray(i.authors?.author)
@@ -1026,18 +1015,15 @@ async function fetchSemantic(query) {
       card.className = 'card';
       card.innerHTML = `
         <div class="title">${i.title}</div>
+        <a href="${i.url}" target="_blank" rel="noopener">View on DBLP</a>
         <div class="meta">
           ${authors}<br>
           ${i.venue || ''}${i.year ? ' • ' + i.year : ''}
         </div>
-        <a href="${i.url}" target="_blank" rel="noopener">View</a>
       `;
       return card;
     }
 
-    /* --------------------------
-       scroll engine (unchanged)
-       -------------------------- */
     function startScroll() {
       cancelAnimationFrame(rafId);
       offset = 0;
@@ -1052,129 +1038,51 @@ async function fetchSemantic(query) {
       rafId = requestAnimationFrame(step);
     }
 
-    /* --------------------------
-       main search: fetch selected sources, merge, dedupe, filter, render
-       -------------------------- */
     async function runSearch() {
       reel.innerHTML = 'Loading…';
       resultCount.textContent = '';
 
-      const extra = inputExtra.value.trim();
+      const extra = ROOT.querySelector('.extraKeywords').value.trim();
       const query = extra ? `${BASE_QUERY} ${extra}` : BASE_QUERY;
 
       const yFrom = parseInt(ROOT.querySelector('.yearFrom').value, 10);
       const yTo = parseInt(ROOT.querySelector('.yearTo').value, 10);
 
-      // fetch from selected sources in parallel
-      const doDBLP = cbDBLP.checked;
-      const doSS = cbSS.checked;
+      const hits = await fetchDBLP(query);
 
-      // if neither selected, treat as DBLP by default (or you can early-return)
-      if (!doDBLP && !doSS) {
-        resultCount.textContent = 'Please select DBLP and/or Semantic Scholar';
-        reel.innerHTML = '';
+      const filtered = hits.filter(h => {
+        const y = parseInt(h.info.year, 10);
+        if (isNaN(y)) return false;
+        if (!isNaN(yFrom) && y < yFrom) return false;
+        if (!isNaN(yTo) && y > yTo) return false;
+        return true;
+      });
+
+      resultCount.textContent =
+        `Query: "${extra}" — ${filtered.length} matches (from ${hits.length})`;
+
+      reel.innerHTML = '';
+      if (!filtered.length) {
+        reel.textContent = 'No results';
         return;
       }
 
-      try {
-        const fetchPromises = [];
-        if (doDBLP) fetchPromises.push(fetchDBLP(query));
-        else fetchPromises.push(Promise.resolve([]));
+      [...filtered, ...filtered].forEach(h => reel.appendChild(makeCard(h)));
 
-        if (doSS) fetchPromises.push(fetchSemantic(query));
-        else fetchPromises.push(Promise.resolve([]));
-
-        const [hitsDBLP, hitsSS] = await Promise.all(fetchPromises);
-        // keep compatibility: hits variable (combined)
-        // dedupe: by normalized title + year
-        const map = new Map();
-        const sourceCounts = { dblp: hitsDBLP.length, semantic: hitsSS.length };
-
-        function addHits(arr, tag) {
-          for (const h of arr) {
-            const titleNorm = normalizeTitle(h.info?.title || '');
-            const yearKey = (h.info?.year || '').toString();
-            const key = titleNorm + '|' + yearKey;
-            if (!map.has(key)) {
-              // optionally attach source info
-              h.info._source = tag;
-              map.set(key, h);
-            } else {
-              // if duplicate exists, keep the one that has a URL or a venue populated
-              const existing = map.get(key);
-              if ((!existing.info.url || existing.info.url === '') && h.info.url) {
-                map.set(key, h);
-              }
-            }
-          }
-        }
-
-        addHits(hitsDBLP, 'dblp');
-        addHits(hitsSS, 'semantic');
-
-        // final combined array
-        const combined = Array.from(map.values());
-
-        // filter by year range
-        const filtered = combined.filter(h => {
-          const y = parseInt(h.info.year, 10);
-          if (isNaN(y)) return false;
-          if (!isNaN(yFrom) && y < yFrom) return false;
-          if (!isNaN(yTo) && y > yTo) return false;
-          return true;
-        });
-
-        // sort by year descending, then by source preference (keep DBLP first maybe)
-        filtered.sort((a, b) => {
-          const ya = parseInt(a.info.year || 0, 10);
-          const yb = parseInt(b.info.year || 0, 10);
-          if (yb !== ya) return yb - ya;
-          // tie-breaker: prefer DBLP entries
-          if (a.info._source === b.info._source) return 0;
-          if (a.info._source === 'dblp') return -1;
-          return 1;
-        });
-
-        // counts
-        resultCount.textContent =
-          `Query: "${query}" — Showing ${filtered.length} matches (fetched ${sourceCounts.dblp} DBLP + ${sourceCounts.semantic} Semantic)`;
-
-        reel.innerHTML = '';
-        if (!filtered.length) {
-          reel.textContent = 'No results';
-          return;
-        }
-
-        // duplicate once for seamless scrolling
-        [...filtered, ...filtered].forEach(h => reel.appendChild(makeCard(h)));
-
-        // measure and start scroll
-        requestAnimationFrame(() => {
-          contentWidth = reel.scrollWidth;
-          startScroll();
-        });
-
-      } catch (err) {
-        console.error(err);
-        reel.textContent = 'Error loading results';
-        resultCount.textContent = '';
-      }
+      requestAnimationFrame(() => {
+        contentWidth = reel.scrollWidth;
+        startScroll();
+      });
     }
 
-    // wire up
     btn.addEventListener('click', runSearch);
 
-    // initial run
-    runSearch();
-
+    runSearch(); // initial load
   })();
   </script>
 
-  
-
 </section>
-
-
+		
       
       <!-- HERO / HOMEPAGE BLURB -->
       <section class="section hero" id="top">
@@ -1184,24 +1092,24 @@ async function fetchSemantic(query) {
             Data, models, and decisions for complex Dynamic systems
           </div>
           <h1 class="hero-title">
-          EMITLab's research innovates &nbsp;&nbsp; <span>data‑, machine learning-,  and AI‑systems</span> &nbsp; to help enable robust and resilient human-centric environments</h1>
+          EMITLab's research innovates&nbsp;<span>data-, machine learning-, and AI-systems</span>&nbsp;to help enable robust and resilient human-centric environments</h1>
           <p class="hero-blurb">
-            EMITLab in the Center for Assured and Scalable Data Engineering (CASCADE) at Arizona State University carries out research on&nbsp; data‑, machine learning-,  and AI‑systems that couple real‑world data,
+            EMITLab in the Center for Assured and Scalable Data Engineering (CASCADE) at Arizona State University carries out research on&nbsp; data-, machine learning-,  and AI-systems that couple real-world data,
             simulations, and causal models to support informed and effective  decision making&nbsp; in critical complex dynamic systems, such as disasters, pandemics, water resources, and energy
-            infrastructure. Grounded in NSF and USACE‑funded work, including <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=1610282" target="_blank" rel="noopener" style="color: maroon;">DataStorm</a>,
+            infrastructure. Grounded in NSF and USACE-funded work, including <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=1610282" target="_blank" rel="noopener" style="color: maroon;">DataStorm</a>,
             <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=2125246" target="_blank" rel="noopener" style="color: maroon;">PanCommunity</a>, <a href="https://www.nsf.gov/awardsearch/show-award?AWD_ID=2435886" target="_blank" rel="noopener" style="color: maroon;">PANAX</a>,
             <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=1909555" target="_blank" rel="noopener" style="color: maroon;">pCAR</a>,
             <a href="https://causalbench.org" target="_blank" rel="noopener" style="color: maroon;">CausalBench</a>,
             <a href="https://https://www.asu-newn.org"  target="_blank" rel="noopener" style="color: maroon;">Designing Nature to Enhance Resilience for Built Infrastructure in Western U.S. Landscape </a>,
             <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=2309030" target="_blank" rel="noopener" style="color: maroon;">
-            PIRE: Building Decarbonization via AI‑empowered District Heat Pump System</a>, and the
+            PIRE: Building Decarbonization via AI-empowered District Heat Pump System</a>, and the
 <a href="appex.org" target="_blank" rel="noopener" style="color: maroon;">
           NSF Center for the Analysis of the Epidemic Expansion</a>,
 	    the lab turns sparse, noisy, and complex
             data and models into actionable insights for robust and resilient human-centric environments.
           </p>
           <div class="hero-meta">
-            <span class="hero-meta-pill">NSF &amp; USACE‑funded research</span>
+            <span class="hero-meta-pill">NSF &amp; USACE-funded research</span>
             <span class="hero-meta-pill">Disasters · Epidemics · Water · Energy</span>
 			<span class="hero-meta-pill">Data management &amp; analysis</span>
             <span class="hero-meta-pill">Causal learning &amp; simulations</span>
@@ -1228,9 +1136,7 @@ async function fetchSemantic(query) {
       <!-- Announcement items -->
 
         <article class="announce" role="article" aria-labelledby="a1">
-        <img src="
-./emitlab2.jpg
-" alt="portrait">
+        <img src="/images/emitlab2.jpg" alt="portrait">
         <div class="meta">
           <h3 id="a1" class="headline">Javier Redondo Anton defends his PhD thesis
 	   </h3>
@@ -1246,9 +1152,7 @@ Contexts, and for Knowledge Discovery with Limited Simulation Budgets
 
       
         <article class="announce" role="article" aria-labelledby="a1">
-        <img src="
-./emitlab2.jpg
-" alt="portrait">
+        <img src="/images/emitlab2.jpg" alt="portrait">
         <div class="meta">
           <h3 id="a1" class="headline">Abhinav Gorantla defends his MS thesis
 	   </h3>
@@ -1261,9 +1165,7 @@ Contexts, and for Knowledge Discovery with Limited Simulation Budgets
 
 
         <article class="announce" role="article" aria-labelledby="a1">
-        <img src="
-./emitlab2.jpg
-" alt="portrait">
+        <img src="/images/emitlab2.jpg" alt="portrait">
         <div class="meta">
           <h3 id="a1" class="headline">Fahim Tasneema Azad defends her PhD thesis proposal
 	   </h3>
@@ -1397,8 +1299,7 @@ https://news.engineering.asu.edu/graduate/fahim-tasneema-azad/
      
 ------>
 
-      </section>
-
+</section>
 
       <!-- GRANTS & THEMES CALLOUTS -->
       <section class="section" id="grants">
@@ -1732,7 +1633,7 @@ https://news.engineering.asu.edu/graduate/fahim-tasneema-azad/
 body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial;
   margin: 0;
-  padding: 32px;
+  /* padding: 32px; */
   background: #ffffff;
   color: #222;
 }
@@ -1847,7 +1748,7 @@ footer {
 			  
 <div class="section">
 <div class="card">
-	<img src="Candan_KSelcuk_200_200.jpg" alt="K. Selcuk Candan" class="card-photo">
+	<img src="/images/Candan_KSelcuk_200_200.jpg" alt="K. Selcuk Candan" class="card-photo">
 																				  
 	<div class="card-content"><div class="card-header"><div class="name">K. Selcuk Candan</div><div class="badge">PhD</div></div>
 	<div class="title">President's Professor of Computer Science and Engineering, SCAI, ASU </div>
@@ -1856,7 +1757,7 @@ footer {
 	  <a class="button" href="https://kscandan.site">Learn more...</a>
 	</div></div>
 <div class="card">
-	<img src="mlsapino.png" alt="Maria Luisa Sapino" class="card-photo">
+	<img src="/images/mlsapino.png" alt="Maria Luisa Sapino" class="card-photo">
 	<div class="card-content"><div class="card-header"><div class="name">Maria Luisa Sapino</div><div class="badge">PhD</div></div><div class="title">Adjunct Professor of Computer Science and Engineering, SCAI, ASU </div>
 	<div class="title">Full Professor of Computer Science, University of Turin, Italy </div>
 	 <a class="button" href="https://informatica.unito.it/persone/maria.sapino">Learn more...</a>
@@ -1906,9 +1807,10 @@ footer {
   <a class="button" href="https://abhinavgorantla.me">About</a>
 </div></div>			 
 <div class="card">
+  <img src="/images/kapkic.jpeg" alt="Ahmet Kapkic" class="card-photo">
   <div class="card-content"><div class="card-header"><div class="name">Ahmet Kapkic</div><div class="badge">Ongoing · PhD</div></div>
-  <div class="title">In addition to his contributions to CausalBench, Ahmet's&nbsp; work within the context of the PIRE project integrates causally informed methods into broader systems research, emphasizing causal discovery from complex, observational data. He is  developing approaches that leverage causally-informed Petri nets to enable process discovery from time-series and system logs, blending formal process modeling with causal reasoning to better understand dynamic system behavior. </div>
-  <a class="button" href="https://scholar.google.com/citations?user=dHu5ehsAAAAJ&hl=en">About</a>
+  <div class="title">In addition to his contributions to CausalBench, Ahmet's work within the context of the PIRE project integrates causally informed methods into broader systems research, emphasizing causal discovery from complex, observational data. He is developing approaches that leverage causally-informed Petri nets to enable process discovery from time-series and system logs, blending formal process modeling with causal reasoning to better understand dynamic system behavior. </div>
+  <a class="button" href="kapkic.github.io">About</a>
 </div>	</div>		
 <div class="card">
   <div class="card-content"><div class="card-header"><div class="name">Pratanu Mandal</div><div class="badge">Ongoing · PhD</div></div>
