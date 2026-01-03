@@ -2468,8 +2468,7 @@ N/A
 
 </section>
 
-
-	<section id="bibtex-publications-asu">
+<section id="bibtex-publications-asu">
 
   <style>
     /* ===== Scoped variables (copied from your design) ===== */
@@ -2577,7 +2576,7 @@ N/A
         const body = block.slice(block.indexOf('{') + 1);
         const fields = {};
 
-        body.replace(/(\w+)\s*=\s*[{\"]([^}\"]+)[}\"]/g
+        body.replace(/(\\w+)\\s*=\\s*[{\"]([^}\"]+)[}\"]/g,
           (_, key, value) => {
             fields[key.toLowerCase()] = value.trim();
           }
@@ -2646,6 +2645,10 @@ N/A
   </script>
 
 </section>
+
+
+
+
 
       
     </main>
