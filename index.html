@@ -2469,7 +2469,7 @@ N/A
 
 </section>
 
-<section id="publications">
+<section id="bibtex-publications-asu">
 
   <style>
     /* ===== Scoped variables (copied from your design) ===== */
@@ -2558,7 +2558,7 @@ N/A
   </style>
 
   <div class="container section">
-    <h2>Publications (until December'25)</h2>
+    <h2>Publications (until Dec'25)</h2>
     <div class="pub-list"></div>
   </div>
 
@@ -2577,7 +2577,7 @@ N/A
         const body = block.slice(block.indexOf('{') + 1);
         const fields = {};
 
-        body.replace(/(\w+)\s*=\s*[{\"]([^}\"]+)[}\"]/g,
+        body.replace(/(\\w+)\\s*=\\s*[{\"]([^}\"]+)[}\"]/g,
           (_, key, value) => {
             fields[key.toLowerCase()] = value.trim();
           }
@@ -2612,12 +2612,11 @@ N/A
               ${year ? `<span class="badge">${year}</span>` : ''}
               ${e.url ? `<a class="button" href="${e.url}" target="_blank">View</a>` : ''}
             </div>
-			<div>${venue}</div>
+			<div>   ${venue}  </div>
             <div class="title">${e.title || ''}</div>
           </div>
         `;
 
-		  
         LIST.appendChild(card);
       }
     }
@@ -2648,7 +2647,8 @@ N/A
 
 </section>
 
-		
+
+	
       
     </main>
 
