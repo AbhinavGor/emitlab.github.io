@@ -851,7 +851,6 @@
     </div>
 	    
 	    <a href="#people">People</a>
-		<a href="#bibtex-publications-asu">Publications</a>	  
           </nav>
 
 
@@ -1029,7 +1028,7 @@
         <a href="${i.url}" target="_blank" rel="noopener">View on DBLP</a>
         <div class="meta">
           ${authors}<br>
-          ${i. || ''}${i.year ? ' • ' + i.year : ''}
+          ${i.venue || ''}${i.year ? ' • ' + i.year : ''}
         </div>
       `;
       return card;
@@ -1177,7 +1176,7 @@
 	   </h3>
           <div class="date">February 26, 2026</div>
           <p class="summary">
-	   The <a href="https://wsdm26.causalbench.org">WSDM Workshop on Benchmarking Causal Models (CausalBench'26)</a> aims to promote scientific collaboration, reproducibility, and fairness in causal learning research by providing a dedicated  for work on benchmarking data, algorithms, models, and metrics for causal learning. CausalBench addresses the growing need for unified, publicly available, and configurable benchmarks that support causal discovery, causal effect estimation, and more general causal inference and learning research problems (e.g., A/B testing, experimental design, mechanistic interpretability, causal reasoning and causal RL etc.) across diverse applications, such as web search, data mining, public health, and sustainability.
+	   The <a href="https://wsdm26.causalbench.org">WSDM Workshop on Benchmarking Causal Models (CausalBench'26)</a> aims to promote scientific collaboration, reproducibility, and fairness in causal learning research by providing a dedicated venue for work on benchmarking data, algorithms, models, and metrics for causal learning. CausalBench addresses the growing need for unified, publicly available, and configurable benchmarks that support causal discovery, causal effect estimation, and more general causal inference and learning research problems (e.g., A/B testing, experimental design, mechanistic interpretability, causal reasoning and causal RL etc.) across diverse applications, such as web search, data mining, public health, and sustainability.
 	  </p>
         </div>
       </article>
@@ -2469,7 +2468,8 @@ N/A
 
 </section>
 
-<section id="bibtex-publications-asu">
+
+      <section id="bibtex-publications-asu">
 
   <style>
     /* ===== Scoped variables (copied from your design) ===== */
@@ -2558,7 +2558,7 @@ N/A
   </style>
 
   <div class="container section">
-    <h2>Publications (12/25) </h2>
+    <h2>Publications</h2>
     <div class="pub-list"></div>
   </div>
 
@@ -2568,92 +2568,25 @@ N/A
     const LIST = ROOT.querySelector('.pub-list');
     const BIBTEX_PATH = './assets/publications.bib';
 
+    /* ---------- BibTeX parser ---------- */
+    function parseBibTeX(text) {
+      const entries = [];
+      const blocks = text.split('@').slice(1);
 
-	 /* ------Correct Turkish characters and parse bibtex------ */ 
+      for (const block of blocks) {
+        const body = block.slice(block.indexOf('{') + 1);
+        const fields = {};
 
-// normalize LaTeX accent sequences (Turkish-aware) and variants like {\c{c}}, {\c c}, \c{c}, \c c
-function normalizeLatex(text) {
-  if (!text) return text;
+        body.replace(/(\\w+)\\s*=\\s*[{\"]([^}\"]+)[}\"]/g,
+          (_, key, value) => {
+            fields[key.toLowerCase()] = value.trim();
+          }
+        );
 
-  // Normalize Turkish LaTeX accents (handles {\c{c}}, \c{c}, {\c c}, etc.)
-  const replacements = [
-    [/\{?\\c\s*\{?\s*c\s*\}?\}?/gi, 'ç'],
-    [/\{?\\c\s*\{?\s*C\s*\}?\}?/g,  'Ç'],
-
-    [/\{?\\u\s*\{?\s*g\s*\}?\}?/gi, 'ğ'],
-    [/\{?\\u\s*\{?\s*G\s*\}?\}?/g,  'Ğ'],
-
-    [/\{?\\\"\s*\{?\s*o\s*\}?\}?/gi, 'ö'],
-    [/\{?\\\"\s*\{?\s*O\s*\}?\}?/g,  'Ö'],
-
-    [/\{?\\\"\s*\{?\s*u\s*\}?\}?/gi, 'ü'],
-    [/\{?\\\"\s*\{?\s*U\s*\}?\}?/g,  'Ü'],
-
-    [/\{?\\c\s*\{?\s*s\s*\}?\}?/gi, 'ş'],
-    [/\{?\\c\s*\{?\s*S\s*\}?\}?/g,  'Ş'],
-
-    [/\{?\\i\s*\}?/g, 'ı'],
-    [/\{?\\\.\s*\{?\s*I\s*\}?\}?/g, 'İ']
-  ];
-
-  for (const [re, val] of replacements) {
-    text = text.replace(re, val);
-  }
-
-  // Remove leftover braces that wrap single characters
-  text = text.replace(/\{([A-Za-zÇçĞğİıÖöŞşÜü])\}/g, '$1');
-
-  // Remove remaining LaTeX escapes for punctuation
-  text = text.replace(/\\([%&_$#])/g, '$1');
-
-  return text;
-}
-
-
-// Revised parseBibTeX that calls normalizer before parsing
-function parseBibTeX(text) {
-  if (!text) return [];
-
-  // 1. Normalize LaTeX FIRST
-  text = normalizeLatex(text);
-
-  const entries = [];
-  const blocks = text.split('@').slice(1);
-
-  for (const block of blocks) {
-    const start = block.indexOf('{');
-    if (start === -1) continue;
-
-    const body = block.slice(start + 1);
-    const fields = {};
-
-    // 2. Extract key = value pairs WITHOUT assuming balanced braces
-    body.replace(
-      /(\w+)\s*=\s*(\{(?:[^{}]|\{[^{}]*\})*\}|"(?:[^"]*)"|[^,]+)\s*,?/g,
-      (_, key, raw) => {
-        let value = raw.trim();
-
-        // strip surrounding braces or quotes
-        if (
-          (value.startsWith('{') && value.endsWith('}')) ||
-          (value.startsWith('"') && value.endsWith('"'))
-        ) {
-          value = value.slice(1, -1);
-        }
-
-        fields[key.toLowerCase()] = value.trim();
+        entries.push(fields);
       }
-    );
-
-    // Only drop entry if truly empty
-    if (Object.keys(fields).length > 0) {
-      entries.push(fields);
+      return entries;
     }
-  }
-
-  return entries;
-}
-
 
     /* ---------- Render cards ---------- */
     function render(entries) {
@@ -2664,7 +2597,7 @@ function parseBibTeX(text) {
         const authors = (e.author || '')
           .split(' and ')
           .map(a => a.trim())
-          .join('; ');
+          .join(', ');
 
         const venue = e.booktitle || e.journal || '';
         const year = e.year || '';
@@ -2677,10 +2610,10 @@ function parseBibTeX(text) {
             <div class="card-header">
               <div class="name">${authors}</div>
               ${year ? `<span class="badge">${year}</span>` : ''}
+              ${venue ? `<span class="badge">${venue}</span>` : ''}
               ${e.url ? `<a class="button" href="${e.url}" target="_blank">View</a>` : ''}
             </div>
-            <div> ${venue ? `${venue}` : ''}</div>
-			<div class="title">${e.title || ''}</div>
+            <div class="title">${e.title || ''}</div>
           </div>
         `;
 
@@ -2717,7 +2650,7 @@ function parseBibTeX(text) {
 
 
 
-
+      
       
     </main>
 
