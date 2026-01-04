@@ -2682,6 +2682,7 @@ function parseBibTeX(text) {
             </div>
 			<div class="title">${authors}</div>
 			<div> ${venue ? `${venue}` : ''}</div>
+			<div> ${e.doi ? `<span class="badge">${e.doi}</span>` : ''}</div>
           </div>
         `;
 
