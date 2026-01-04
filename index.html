@@ -2569,49 +2569,99 @@ N/A
     const BIBTEX_PATH = './assets/publications.bib';
 
 
-	 /* Correct Turkish characters*/ 
-function normalizeLatexTurkish(text) {
-  const map = {
-    "{\\c c}": "ç", "{\\c C}": "Ç",
-    "{\\u g}": "ğ", "{\\u G}": "Ğ",
-    "{\\i}": "ı",
-    "{\\.I}": "İ",
-    "{\\\"o}": "ö", "{\\\"O}": "Ö",
-    "{\\c s}": "ş", "{\\c S}": "Ş",
-    "{\\\"u}": "ü", "{\\\"U}": "Ü"
-  };
+	 /* ------Correct Turkish characters and parse bibtex------ */ 
 
-  for (const latex in map) {
-    text = text.split(latex).join(map[latex]);
+// normalize LaTeX accent sequences (Turkish-aware) and variants like {\c{c}}, {\c c}, \c{c}, \c c
+function normalizeLatexTurkish(text) {
+  if (!text) return text;
+
+  // common replacements: patterns cover these variants:
+  // \c{c}  \c c  {\c c}  {\c{c}}
+  // \"{o}  \"o  {\"o}  {\"{o}} etc.
+  const repl = [
+    { re: /\\c\s*\{?\s*c\s*\}?/gi, r: 'ç' },
+    { re: /\\c\s*\{?\s*C\s*\}?/g,  r: 'Ç' },
+
+    { re: /\\u\s*\{?\s*g\s*\}?/gi, r: 'ğ' },
+    { re: /\\u\s*\{?\s*G\s*\}?/g,  r: 'Ğ' },
+
+    // \"o  \"{o}  \\"o variants (double quote)
+    { re: /\\\"\s*\{?\s*o\s*\}?/gi, r: 'ö' },
+    { re: /\\\"\s*\{?\s*O\s*\}?/g,  r: 'Ö' },
+
+    // \"u
+    { re: /\\\"\s*\{?\s*u\s*\}?/gi, r: 'ü' },
+    { re: /\\\"\s*\{?\s*U\s*\}?/g,  r: 'Ü' },
+
+    // \c s
+    { re: /\\c\s*\{?\s*s\s*\}?/gi, r: 'ş' },
+    { re: /\\c\s*\{?\s*S\s*\}?/g,  r: 'Ş' },
+
+    // \i  (dotless i) and possible braces {\i}
+    { re: /\\i\b/g, r: 'ı' },
+    { re: /\\i\s*\{?\s*\}?/g, r: 'ı' },
+
+    // \.I (I with dot above) variants: \.I  \.{I}  {\.I}  {\.\{I\}}
+    { re: /\\\.\s*\{?\s*I\s*\}?/g, r: 'İ' },
+
+    // also some people write {\i} or {\I} etc
+    { re: /\{\\i\}/g, r: 'ı' },
+    { re: /\{\\I\}/g, r: 'I' },
+
+    // some people use combinations with extra braces: {\c{c}}
+    // already covered by the patterns above that allow optional braces
+  ];
+
+  for (const { re, r } of repl) {
+    text = text.replace(re, r);
   }
+
+  // Remove remaining single braces around single letters, e.g. {ç} -> ç
+  text = text.replace(/\{\s*([A-Za-zÇçĞğİıÖöŞşÜü])\s*\}/g, '$1');
+
+  // Also normalize common latex ligatures / escapes you might encounter
+  text = text.replace(/``/g, '"').replace(/''/g, '"'); // smart quotes
+  // remove remaining bare LaTeX escapes for single characters like \% \& etc.
+  text = text.replace(/\\([%&\$#_{}~^])/g, '$1');
 
   return text;
 }
 
-    /* ---------- BibTeX parser ---------- */
+
+// Revised parseBibTeX that calls normalizer before parsing
 function parseBibTeX(text) {
-  text = normalizeLatexTurkish(text);   
+  if (!text) return [];
+
+  // normalize Turkish LaTeX and similar sequences first
+  text = normalizeLatexTurkish(text);
 
   const entries = [];
+  // split by top-level @ (simple but works for most BibTeX files)
   const blocks = text.split('@').slice(1);
 
   for (const block of blocks) {
     const bodyStart = block.indexOf('{');
     if (bodyStart === -1) continue;
 
+    // find the matching closing brace of the entry's opening '{' — naive approach:
+    // take everything after the first '{' because we only need key/value pairs for our fields
     const body = block.slice(bodyStart + 1);
+
     const fields = {};
+    // match key = {value} or key = "value" or key = value (simple)
+    // this regex handles values containing nested characters up to the next unbalanced brace/quote — good enough for common cases
+    body.replace(/(\w+)\s*=\s*(?:\{([^}]*)\}|"([^"]*)"|([^,]*))(?:,|$)/g, (_, key, v1, v2, v3) => {
+      const value = (v1 !== undefined ? v1 : (v2 !== undefined ? v2 : (v3 !== undefined ? v3 : ''))).trim();
+      fields[key.toLowerCase()] = value;
+    });
 
-    body.replace(/(\w+)\s*=\s*[{\"]([^}\"]+)[}\"]/g,
-      (_, key, value) => {
-        fields[key.toLowerCase()] = value.trim();
-      }
-    );
-
+    // push only if we have a title (prevents empty entries)
     if (fields.title) entries.push(fields);
   }
+
   return entries;
 }
+
 
     /* ---------- Render cards ---------- */
     function render(entries) {
