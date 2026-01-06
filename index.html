@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <link rel="icon" type="image/png" href="images/favicon-96x96.png" sizes="96x96" />
+  <link rel="icon" type="image/svg+xml" href="images/favicon.svg" />
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>EMITLab</title>
@@ -2537,7 +2539,40 @@ N/A
 
     #bibtex-publications-asu .title {
       font-style: italic;
-      margin: 6px 0 10px;
+    }
+
+    #bibtex-publications-asu .field-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    #bibtex-publications-asu .field-row:last-child {
+      margin-bottom: 0;
+    }
+
+    #bibtex-publications-asu .icon {
+      flex-shrink: 0;
+      width: 16px;
+      height: 16px;
+      color: var(--asu-maroon);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      line-height: 1;
+    }
+
+    #bibtex-publications-asu .icon svg {
+      width: 100%;
+      height: 100%;
+      fill: currentColor;
+      display: block;
+    }
+
+    #bibtex-publications-asu .field-content {
+      flex: 1;
     }
 
 	 #bibtex-publications-asu .doi {
@@ -2563,7 +2598,7 @@ N/A
   </style>
 
   <div class="container section">
-    <h2>Publications (12/25 - from Semantic Scholar)</h2>
+    <h2>Publications (01/26 - from Semantic Scholar)</h2>
     <div class="pub-list"></div>
   </div>
 
@@ -2572,6 +2607,18 @@ N/A
     const ROOT = document.getElementById('bibtex-publications-asu');
     const LIST = ROOT.querySelector('.pub-list');
     const BIBTEX_PATH = './assets/publications.bib';
+
+    // Icon SVG definitions
+    const ICONS = {
+      // Title: document icon (moved from venue)
+      title: '<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M1 2.5A1.5 1.5 0 012.5 1h11A1.5 1.5 0 0115 2.5v11a1.5 1.5 0 01-1.5 1.5h-11A1.5 1.5 0 011 13.5v-11zM2.5 2a.5.5 0 00-.5.5v11a.5.5 0 00.5.5h11a.5.5 0 00.5-.5v-11a.5.5 0 00-.5-.5h-11zM4 4h8v1H4V4zm0 2h8v1H4V6zm0 2h5v1H4V8zm0 2h5v1H4v-1z"/></svg>',
+      // Authors: users icon (adjusted alignment)
+      authors: '<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M7 8a3 3 0 100-6 3 3 0 000 6zM7 9c-2.67 0-8 1.34-8 4v1h16v-1c0-2.66-5.33-4-8-4zm4.5 0a3.5 3.5 0 100-7 3.5 3.5 0 000 7zm0 1c1.86 0 5.5.93 5.5 2.5v1h-11v-1c0-1.57 3.64-2.5 5.5-2.5z"/></svg>',
+      // Venue: open book icon
+      venue: '<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M1 2.828c.885-.37 2.154-.769 3.388-.893 1.33-.134 2.458.063 3.112.752v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.461-3.287.811V2.828zm7.5-.141c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.918-.35-2.107-.692-3.287-.81-1.094-.111-2.278-.039-3.213.492V2.687zM8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 000 2.5v11a.5.5 0 00.707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 00.78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0016 13.5v-11a.5.5 0 00-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.81 8.985.936 8 1.783z"/></svg>',
+      // DOI: globe with two meridians (SVG for CSS coloring)
+      doi: '<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1"/><ellipse cx="8" cy="8" rx="7" ry="3.5" fill="none" stroke="currentColor" stroke-width="1"/><ellipse cx="8" cy="8" rx="7" ry="3.5" fill="none" stroke="currentColor" stroke-width="1" transform="rotate(90 8 8)"/><line x1="4" y1="2" x2="4" y2="14" stroke="currentColor" stroke-width="1"/><line x1="12" y1="2" x2="12" y2="14" stroke="currentColor" stroke-width="1"/></svg>'
+    };
 
 	 /* ------Correct Turkish characters and parse bibtex------ */ 
 
@@ -2680,13 +2727,31 @@ function parseBibTeX(text) {
         card.innerHTML = `
           <div class="card-content">
             <div class="card-header">
-              <div class="name">${e.title || ''}</div>
+              <div class="field-row" style="flex: 1; margin-bottom: 0;">
+                <span class="icon">${ICONS.title}</span>
+                <div class="field-content name">${e.title || ''}</div>
+              </div>
               ${year ? `<span class="badge">${year}</span>` : ''}
               ${e.url ? `<a class="button" href="${e.url}" target="_blank">View</a>` : ''}
             </div>
-			<div class="title">${authors}</div>
-			<div style="margin-bottom: 8px;"> ${venue ? `${venue}` : ''}</div>
-			<div> ${e.doi ? `<a class="doi" href="https://doi.org/${e.doi}">https://doi.org/${e.doi}</a>` : ''}</div>
+            ${authors ? `
+            <div class="field-row">
+              <span class="icon">${ICONS.authors}</span>
+              <div class="field-content title">${authors}</div>
+            </div>
+            ` : ''}
+            ${venue ? `
+            <div class="field-row">
+              <span class="icon">${ICONS.venue}</span>
+              <div class="field-content">${venue}</div>
+            </div>
+            ` : ''}
+            ${e.doi ? `
+            <div class="field-row">
+              <span class="icon">${ICONS.doi}</span>
+              <div class="field-content"><a class="doi" href="https://doi.org/${e.doi}">https://doi.org/${e.doi}</a></div>
+            </div>
+            ` : ''}
           </div>
         `;
 

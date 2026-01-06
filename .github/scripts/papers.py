@@ -2,6 +2,7 @@ import argparse
 import os
 import re
 import sys
+from datetime import datetime
 from pathlib import Path
 
 import requests
@@ -9,13 +10,50 @@ from semanticscholar import SemanticScholar
 
 _AUTHOR_PATTERN = re.compile(r'(author\s*=\s*[{"])(.*?)([}"],?)', re.IGNORECASE | re.DOTALL)
 
+
 def dedupe_bibtex_authors(bibtex_entry):
     def dedupe_authors(match):
         authors_str = match.group(2)
         authors = [a.strip() for a in authors_str.split(' and ')]
         deduped = list(dict.fromkeys(authors))
         return match.group(1) + ' and '.join(deduped) + match.group(3)
+
     return _AUTHOR_PATTERN.sub(dedupe_authors, bibtex_entry)
+
+
+def update_index_heading_date(script_dir: Path) -> None:
+
+    project_root = script_dir.parent.parent
+    index_path = project_root / "index.html"
+
+    if not index_path.exists():
+        print(f"index.html not found at {index_path}, skipping heading date update")
+        return
+
+    try:
+        with index_path.open("r", encoding="utf-8") as f:
+            html = f.read()
+    except OSError as e:
+        print(f"Failed to read {index_path}: {e}")
+        return
+
+    today_str = datetime.today().strftime("%m/%y")
+    new_heading = f"Publications ({today_str} - from Semantic Scholar)"
+
+    # Replace only the Semantic Scholar heading, not the DBLP one
+    pattern = r"Publications\s*\([^)]*-?\s*from\s+Semantic\s+Scholar[^)]*\)"
+    new_html, count = re.subn(pattern, new_heading, html, flags=re.IGNORECASE)
+    if count == 0:
+        print("Did not find Publications heading to update in index.html")
+        return
+
+    try:
+        with index_path.open("w", encoding="utf-8") as f:
+            f.write(new_html)
+        print(f"Updated publications heading date in {index_path} to {today_str}")
+    except OSError as e:
+        print(f"Failed to write {index_path}: {e}")
+
 
 def main():
     author_ids = ['1720972', '2062304687','2239621942','51877438','1972061357']
@@ -84,7 +122,9 @@ def main():
     with open('assets/publications.bib', 'w') as f:
         for bibtex in bibtex_list:
             f.write(bibtex + '\n')
-    
+
+    # After updating publications, also refresh the heading date in index.html
+    update_index_heading_date(script_dir)
 
 if __name__ == '__main__':
     main()
