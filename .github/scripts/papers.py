@@ -69,7 +69,15 @@ def main():
             bibtex = bibtex.replace('}\n}', f'}},\n doi = {{{doi}}}\n}}')
         except:
             doi = None
+        
+        # fetch the url of the paper if available
+        try:
+            url = paper_info.url
+            bibtex = bibtex.replace('}\n}', f'}},\n url = {{{url}}}\n}}')
+        except:
+            url = None
         bibtex_list.append(bibtex)
+        
         print(f"Added {count}, out of {len(paper_ids)}")
 
     #save bibtext list to a file.
